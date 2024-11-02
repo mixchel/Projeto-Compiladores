@@ -55,10 +55,10 @@ Char {CHAR}
 %%
 Prog : Prog Prog %prec COMP {$1:$2}
     | {- empty -} {[]}
-    | Com {$1}
+    | Stm {$1}
 
-Com : if '(' Exp ')' Com {If $3 $5}
-    | while '(' Exp ')' Com {WHILE $3 $5}
+Stm : if '(' Exp ')' Stm {If $3 $5}
+    | while '(' Exp ')' Stm {WHILE $3 $5}
     | val id Type '=' Exp {Val $2 $3 $5}
     | var id Type '=' Exp {Var $2 $3 $5}
     | val id '=' Exp {Val $2 Undef $4}
@@ -81,13 +81,13 @@ Type : Boolean {$1}
 
 {
 type Id = String
-type Prog = [Com]
-data Com = IF Exp Com Com 
+type Prog = [Stm]
+data Stm = IF Exp Stm Stm 
             | Var Id Type Exp 
             | Val Id Type Exp 
             | Return Exp 
             | Block Prog
-            | While Exp Com
+            | While Exp Stm
             | Assign Id Exp
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
         | Or Exp Exp | And Exp Exp
