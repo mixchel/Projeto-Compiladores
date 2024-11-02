@@ -19,7 +19,6 @@ $white+    ;
 \* {\s -> MULT}
 \/ {\s -> DIV}
 \% {\s -> MOD}
-log {\s -> LOG}
 
 -- comparison
 "<=" {\s -> LESSEQ}
