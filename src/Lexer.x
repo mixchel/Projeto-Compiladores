@@ -25,7 +25,7 @@ $white+    ;
 ">=" {\s -> GREATEREQ}
 "<" {\s -> LESS}
 ">" {\s -> GREATER}
-"=" {\s -> EQUAL}
+"==" {\s -> EQUAL}
 "!=" {\s -> NEQUAL}
 "&&" {\s -> AND}
 "||" {\s -> OR}
