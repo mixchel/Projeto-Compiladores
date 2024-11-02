@@ -46,12 +46,11 @@ if {IF}
 else {ELSE}
 while {WHILE}
 return {RETURN}
-"Boolean" {BOOLEAN}
-"Int" {INT}
-"Float" {FLOAT}
-"String" {STRING}
-"Char" {CHAR}
-"Undef" {UNDEF}
+Boolean {BOOLEAN}
+Int {INT}
+Float {FLOAT}
+String {STRING}
+Char {CHAR}
 
 %%
 Prog : Prog Prog %prec COMP {$1:$2}
@@ -74,12 +73,11 @@ Exp : id '(' Arg ')' {FunCall $1 $2}
 Arg : Arg ',' Arg {$1:$2}
     | {- empty -} {[]}
 
-Type : "Boolean" {$1}
-     | "Int" {$1}
-     | "Float" {$1}
-     | "String" {$1}
-     | "Char" {$1}
-     | "Undef" {$1}
+Type : Boolean {$1}
+     | Int {$1}
+     | Float {$1}
+     | String {$1}
+     | Char {$1}
 
 {
 type Id = String
