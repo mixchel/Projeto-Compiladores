@@ -40,11 +40,12 @@ else {\s -> ELSE}
 while {\s -> WHILE}
 --bool values
 
--- symbols
+-- symbols & keywords
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
+return {\s -> RETURN}
 
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN
 
 }
