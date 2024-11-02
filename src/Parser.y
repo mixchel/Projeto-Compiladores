@@ -5,10 +5,10 @@ import Lexer
 %name parse
 %tokentype { Token }
 %error { parseError }
-%nonassoc '>' '<' '>=' '<=' '==' '!='
+%nonassoc '>' '<' ">=" "<=" "==" "!="
 %left '+' '-'
 %left '*' '/' '%'
-%left '&&' '||' 
+%left "&&" "||" 
 %left NEG '!'
 %right COMP ','
 %token
@@ -27,14 +27,16 @@ id {ID $$}
 '/' {DIV}
 '%' {MOD}
 '=' {ASSIGN}
-'>=' {GREATEREQ}
-'<=' {LESSEQ}
+">=" {GREATEREQ}
+"<=" {LESSEQ}
 '>' {GREATER}
 '<' {LESS}
-'!=' {NEQUAL}
-'&&' {AND}
-'||' {OR}
+"!=" {NEQUAL}
+"&&" {AND}
+"||" {OR}
 '!' {NOT}
+'(' {LPAREN}
+')' {RPAREN}
 '{' {LBRACKET}
 '}' {RBRACKET}
 ',' {COMMA}
@@ -44,27 +46,40 @@ if {IF}
 else {ELSE}
 while {WHILE}
 return {RETURN}
+"Boolean" {BOOLEAN}
+"Int" {INT}
+"Float" {FLOAT}
+"String" {STRING}
+"Char" {CHAR}
+"Undef" {UNDEF}
 
 %%
 Prog : Prog Prog %prec COMP {$1:$2}
     | {- empty -} {[]}
     | Com {$1}
 
-Com : if ( Exp ) Com {If $3 $5}
-    | while ( Exp ) Com {WHILE $3 $5}
-    | val id Type = Exp {Val $2 $3 $5}
-    | var id Type = Exp {Var $2 $3 $5}
-    | val id = Exp {Val $2 Undef $5}
-    | var id = Exp {Val $2 Undef $5}
+Com : if '(' Exp ')' Com {If $3 $5}
+    | while '(' Exp ')' Com {WHILE $3 $5}
+    | val id Type '=' Exp {Val $2 $3 $5}
+    | var id Type '=' Exp {Var $2 $3 $5}
+    | val id '=' Exp {Val $2 Undef $4}
+    | var id '=' Exp {Val $2 Undef $4}
     | return Exp {Return $2}
-    | \{ Prog \} {Block $2} 
+    | '{' Prog '}' {Block $2} 
 
-Exp : id ( Arg ) {FunCall $1 $2}
-    | \( Exp \) {SubExp $2}
-    | - Exp %prec NEG { Negate $2 }
+Exp : id '(' Arg ')' {FunCall $1 $2}
+    | '(' Exp ')' {SubExp $2}
+    | '-' Exp %prec NEG { Negate $2 }
 
-Arg : Arg , Arg {$1:$2}
+Arg : Arg ',' Arg {$1:$2}
     | {- empty -} {[]}
+
+Type : "Boolean" {$1}
+     | "Int" {$1}
+     | "Float" {$1}
+     | "String" {$1}
+     | "Char" {$1}
+     | "Undef" {$1}
 
 {
 type Id = String
