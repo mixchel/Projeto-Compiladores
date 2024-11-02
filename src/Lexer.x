@@ -36,12 +36,10 @@ $white+    ;
 \"[a-zA-Z0-9_ ]+\" {\s -> STRING s}
 \'[a-zA-Z0-9_]\' {\s -> CHAR (read s)}
 
-
 -- flow control
 if {\s -> IF}
 else {\s -> ELSE}
 while {\s -> WHILE}
---bool values
 
 -- symbols & keywords
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
