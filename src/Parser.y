@@ -26,7 +26,7 @@ id {ID $$}
 '*' {MULT}
 '/' {DIV}
 '%' {MOD}
-'=' {ASSIGN} -- Need to add this to lexer
+'=' {ASSIGN}
 '>=' {GREATEREQ}
 '<=' {LESSEQ}
 '>' {GREATER}
@@ -37,7 +37,7 @@ id {ID $$}
 '!' {NOT}
 '{' {LBRACKET}
 '}' {RBRACKET}
-',' {COMMA} -- add this to lexer
+',' {COMMA}
 var {VAR}
 val {VAL}
 if {IF}
