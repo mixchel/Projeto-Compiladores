@@ -44,6 +44,6 @@ while {\s -> WHILE}
 
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LOG | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name
 
 }
