@@ -26,6 +26,7 @@ $white+    ;
 "<" {\s -> LESS}
 ">" {\s -> GREATER}
 "=" {\s -> EQUAL}
+"!=" {\s -> NEQUAL}
 "&&" {\s -> AND}
 "||" {\s -> OR}
 
@@ -44,6 +45,6 @@ while {\s -> WHILE}
 
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name
 
 }
