@@ -43,9 +43,11 @@ while {\s -> WHILE}
 -- symbols & keywords
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
 return {\s -> RETURN}
+var {\s -> VAR}
+val {\s -> VAL}
 
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN | VAR | VAL
 
 }
