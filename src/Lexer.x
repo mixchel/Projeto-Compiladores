@@ -35,7 +35,6 @@ $white+    ;
 
 -- flow control
 if {\s -> IF}
-then {\s -> THEN}
 else {\s -> ELSE}
 while {\s -> WHILE}
 --bool values
