@@ -12,6 +12,7 @@ $white+    ;
 \) {\s -> RPAREN}
 \{ {\s -> LBRACE}
 \} {\s -> RBRACE}
+"," {\s -> COMMA}
 
 -- arithmetic
 \+ {\s -> PLUS}
@@ -48,6 +49,7 @@ while {\s -> WHILE}
 return {\s -> RETURN}
 var {\s -> VAR}
 val {\s -> VAL}
+"=" {\s -> ASSIGNMENT}
 
 -- types
 Int {\s -> TINT}
@@ -58,6 +60,6 @@ Boolean {\s -> TBOOL}
 
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN | VAR | VAL | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID name | RETURN | VAR | VAL | ASSIGNMENT | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL
 
 }
