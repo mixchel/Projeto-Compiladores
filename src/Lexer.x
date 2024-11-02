@@ -47,8 +47,14 @@ return {\s -> RETURN}
 var {\s -> VAR}
 val {\s -> VAL}
 
+-- types
+Int {\s -> TINT}
+Float {\s -> TFLOAT}
+String {\s -> TSTRING}
+Char {\s -> TCHAR}
+
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN | VAR | VAL | STRING String | CHAR Char
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | WHOLE Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN | VAR | VAL | STRING String | CHAR Char | TINT | TFLOAT | TSTRING | TCHAR
 
 }
