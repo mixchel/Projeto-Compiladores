@@ -29,12 +29,14 @@ $white+    ;
 "!=" {\s -> NEQUAL}
 "&&" {\s -> AND}
 "||" {\s -> OR}
+"!" {\s -> NOT}
 
 -- values
 [0-9]+ {\s -> INT (read s)}
 [0-9]+"."[0-9]+ {\s -> REAL (read s)}
 \"[a-zA-Z0-9_ ]+\" {\s -> STRING s}
 \'[a-zA-Z0-9_]\' {\s -> CHAR (read s)}
+true|false {\s -> BOOL (read s)}
 
 -- flow control
 if {\s -> IF}
@@ -52,9 +54,10 @@ Int {\s -> TINT}
 Float {\s -> TFLOAT}
 String {\s -> TSTRING}
 Char {\s -> TCHAR}
+Boolean {\s -> TBOOL}
 
 {
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | WHOLE Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN | VAR | VAL | STRING String | CHAR Char | TINT | TFLOAT | TSTRING | TCHAR
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | WHOLE Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | ID name | RETURN | VAR | VAL | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL
 
 }
