@@ -7,7 +7,9 @@ module Lexer where
 tokens :-
 
 -- syntax
-$white+    ;
+$white+             ;
+\/\/.*$             ;
+\/\*(.|\s)*\*\/     ;
 \( {\s -> LPAREN}
 \) {\s -> RPAREN}
 \{ {\s -> LBRACE}
