@@ -45,9 +45,9 @@ Boolean {\s -> TBOOL}
 [0-9]+ {\s -> INT (read s)}
 [0-9]+"."[0-9]+ {\s -> REAL (read s)}
 \"[a-zA-Z0-9_ ]+\" {\s -> STRING (unquote s)}
-\'[a-zA-Z0-9_]\' {\s -> CHAR (s !! 2)}
-true|false {\s -> BOOL (read s)}
-
+\'[a-zA-Z0-9_]\' {\s -> CHAR (s !! 1)}
+true {\s -> BOOL True}
+false {\s -> BOOL False}
 -- flow control
 if {\s -> IF}
 else {\s -> ELSE}
@@ -56,8 +56,8 @@ while {\s -> WHILE}
 -- symbols & keywords
 var {\s -> VAR}
 val {\s -> VAL}
-[_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
 return {\s -> RETURN}
+[_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
 ":" {\s -> SEMICOLON}
 "=" {\s -> ASSIGN}
 

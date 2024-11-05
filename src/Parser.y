@@ -89,8 +89,11 @@ Exp : id '(' Arg ')' {FunCall $1 $3}
     | char {V (D $1)}
     | id {Identifier $1}
 
-Arg : Exp ',' Arg {$1:$3}
+Arg : Exp Arg1 {$1:$2}
     | {- empty -} {[]}
+
+Arg1 : ',' Arg {$2}
+     | {- empty -} {[]}
 
 Type : Boolean {TBoolean}
      | Int {TInt}
