@@ -10,7 +10,7 @@ import Lexer
 %left '*' '/' '%'
 %left "&&" "||" 
 %left NEG '!'
-%right COMP ','
+%right ','
 %token
 
 int {INT $$}
@@ -53,9 +53,8 @@ String {STRING}
 Char {CHAR}
 
 %%
-Prog : Prog Prog %prec COMP {$1:$2}
-    | {- empty -} {[]}
-    | Stm {$1}
+Prog : Stm Prog {$1:$2}
+     | {- empty -} {[]}
 
 Stm : if '(' Exp ')' Stm {If $3 $5 EmptyStm}
     | if '(' Exp ')' Stm else Stm {If $3 $5 $7}
