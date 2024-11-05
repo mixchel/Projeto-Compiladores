@@ -57,7 +57,8 @@ Prog : Prog Prog %prec COMP {$1:$2}
     | {- empty -} {[]}
     | Stm {$1}
 
-Stm : if '(' Exp ')' Stm {If $3 $5}
+Stm : if '(' Exp ')' Stm {If $3 $5 EmptyStm}
+    | if '(' Exp ')' Stm else Stm {If $3 $5 $7}
     | while '(' Exp ')' Stm {WHILE $3 $5}
     | val id Type '=' Exp {Val $2 $3 $5}
     | var id Type '=' Exp {Var $2 $3 $5}
@@ -103,13 +104,14 @@ Type : Boolean {$1}
 {
 type Id = String
 type Prog = [Stm]
-data Stm = IF Exp Stm Stm 
+data Stm = If Exp Stm Stm 
             | Var Id Type Exp 
             | Val Id Type Exp 
             | Return Exp 
             | Block Prog
             | While Exp Stm
             | Assign Id Exp
+            | EmptyStm
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
         | Or Exp Exp | And Exp Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
