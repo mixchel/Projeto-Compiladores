@@ -67,6 +67,6 @@ unquote s = init (tail s)
 
 
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Int | REAL Float | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | SEMICOLON
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | SEMICOLON
                 deriving (Show)
 }

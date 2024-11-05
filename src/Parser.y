@@ -82,11 +82,11 @@ Exp : id '(' Arg ')' {FunCall $1 $3}
     | Exp "&&" Exp {And $1 $3}
     | Exp "||" Exp {Or $1 $3}
     | '!' Exp {Not $2}
-    | int {V (A $1)}
-    | real {V (B $1)}
-    | bool {V (E $1)}
-    | str {V (C $1)}
-    | char {V (D $1)}
+    | int {Int $1}
+    | real {Float $1}
+    | bool {Bool $1}
+    | str {Str $1}
+    | char {Char $1}
     | id {Identifier $1}
 
 Arg : Exp Arg1 {$1:$2}
@@ -115,12 +115,12 @@ data Stm = If Exp Stm Stm
             | EmptyStm
 
             deriving (Show)
-data Value = A Int | B Float |C String |D Char |E Bool
-            deriving (Show)
+--data Value = A Int | B Float |C String |D Char |E Bool
+--            deriving (Show)
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
         | Or Exp Exp | And Exp Exp | Not Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
-        | V Value
+        | Int Integer | Bool Bool | Char Char | Str String | Float Double
         | FunCall Id [Exp]
         | SubExp Exp
         | Negate Exp
