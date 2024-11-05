@@ -17,8 +17,6 @@ real {REAL $$}
 bool {BOOL $$}
 str {STRING $$}
 char {CHAR $$}
-true {TRUE}
-false {FALSE}
 id {ID $$}
 '+' {PLUS}
 '-' {MINUS}
@@ -36,20 +34,21 @@ id {ID $$}
 '!' {NOT}
 '(' {LPAREN}
 ')' {RPAREN}
-'{' {LBRACKET}
-'}' {RBRACKET}
+'{' {LBRACE}
+'}' {RBRACE}
 ',' {COMMA}
+':' {SEMICOLON}
 var {VAR}
 val {VAL}
 if {IF}
 else {ELSE}
 while {WHILE}
 return {RETURN}
-Boolean {BOOLEAN}
-Int {INT}
-Float {FLOAT}
-String {STRING}
-Char {CHAR}
+Boolean {TBOOL}
+Int {TINT}
+Float {TFLOAT}
+String {TSTRING}
+Char {TCHAR}
 
 %%
 Prog : Stm Prog {$1:$2}
@@ -58,48 +57,46 @@ Prog : Stm Prog {$1:$2}
 Stm : if '(' Exp ')' Stm else Stm {If $3 $5 $7}
     | if '(' Exp ')' Stm {If $3 $5 EmptyStm}
     | while '(' Exp ')' Stm {While $3 $5}
-    | val id Type '=' Exp {Val $2 $3 $5}
-    | var id Type '=' Exp {Var $2 $3 $5}
+    | val id ':' Type '=' Exp {Val $2 $4 $6}
+    | var id ':' Type '=' Exp {Var $2 $4 $6}
     | val id '=' Exp {Val $2 Undef $4}
     | var id '=' Exp {Val $2 Undef $4}
     | id '=' Exp       {Assign $1 $3}
     | return Exp {Return $2}
     | '{' Prog '}' {Block $2}
-    | id '(' Arg ')' {FunCall $1 $2}
+    | id '(' Arg ')' {ExpStm (FunCall $1 $3)}
 
-Exp : id '(' Arg ')' {FunCall $1 $2}
+Exp : id '(' Arg ')' {FunCall $1 $3}
     | '(' Exp ')' {SubExp $2}
     | '-' Exp %prec NEG { Negate $2 }
-    | Exp '+' Exp {$1 PLUS $3}
-    | Exp '-' Exp {$1 MINUS $3}
-    | Exp '*' Exp {$1 MULT $3}
-    | Exp '/' Exp {$1 DIV $3}
-    | Exp '%' Exp {$1 MOD $3}
-    | Exp '<' Exp {$1 LESS $3}
-    | Exp '>' Exp {$1 GREATER $3}
-    | Exp "<=" Exp {$1 LESSEQ $3}
-    | Exp ">=" Exp {$1 GREATEREQ $3}
-    | Exp "!=" Exp {$1 NEQUAL $3}
-    | Exp "&&" Exp {$1 AND $3}
-    | Exp "||" Exp {$1 OR $3}
-    | '!' Exp {NOT $2}
-    | int {$1}
-    | real {$1}
-    | bool {$1}
-    | str {$1}
-    | char {$1}
-    | true {$1}
-    | false {$1}
-    | id {$1}
+    | Exp '+' Exp {Plus $1 $3}
+    | Exp '-' Exp {Minus $1 $3}
+    | Exp '*' Exp {Times $1 $3}
+    | Exp '/' Exp {Div $1 $3}
+    | Exp '%' Exp {Mod $1 $3}
+    | Exp '<' Exp {Less $1 $3}
+    | Exp '>' Exp {Greater $1 $3}
+    | Exp "<=" Exp {Lesseq $1 $3}
+    | Exp ">=" Exp {Greatereq $1 $3}
+    | Exp "!=" Exp {Nequal $1 $3}
+    | Exp "&&" Exp {And $1 $3}
+    | Exp "||" Exp {Or $1 $3}
+    | '!' Exp {Not $2}
+    | int {V (A $1)}
+    | real {V (B $1)}
+    | bool {V (E $1)}
+    | str {V (C $1)}
+    | char {V (D $1)}
+    | id {Identifier $1}
 
 Arg : Exp ',' Arg {$1:$3}
     | {- empty -} {[]}
 
-Type : Boolean {$1}
-     | Int {$1}
-     | Float {$1}
-     | String {$1}
-     | Char {$1}
+Type : Boolean {TBoolean}
+     | Int {TInt}
+     | Float {TFloat}
+     | String {TString}
+     | Char {TChar}
 
 {
 type Id = String
@@ -111,16 +108,24 @@ data Stm = If Exp Stm Stm
             | Block Prog
             | While Exp Stm
             | Assign Id Exp
+            | ExpStm Exp
             | EmptyStm
+
+            deriving (Show)
+data Value = A Int | B Float |C String |D Char |E Bool
             deriving (Show)
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
-        | Or Exp Exp | And Exp Exp
+        | Or Exp Exp | And Exp Exp | Not Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
-        | Int |Float | Bool 
+        | V Value
         | FunCall Id [Exp]
         | SubExp Exp
         | Negate Exp
+        | Identifier Id
         deriving (Show)
-data Type = Boolean | Int | Float | String | Char | Undef
+data Type = TBoolean | TInt | TFloat | TString | TChar | Undef
             deriving (Show)
+
+parseError :: [Token] -> a
+parseError _ = error "Parse error"
 }
