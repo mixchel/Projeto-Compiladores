@@ -10,7 +10,6 @@ import Lexer
 %left '*' '/' '%'
 %left "&&" "||" 
 %left NEG '!'
-%right ','
 %token
 
 int {INT $$}
@@ -56,15 +55,17 @@ Char {CHAR}
 Prog : Stm Prog {$1:$2}
      | {- empty -} {[]}
 
-Stm : if '(' Exp ')' Stm {If $3 $5 EmptyStm}
-    | if '(' Exp ')' Stm else Stm {If $3 $5 $7}
-    | while '(' Exp ')' Stm {WHILE $3 $5}
+Stm : if '(' Exp ')' Stm else Stm {If $3 $5 $7}
+    | if '(' Exp ')' Stm {If $3 $5 EmptyStm}
+    | while '(' Exp ')' Stm {While $3 $5}
     | val id Type '=' Exp {Val $2 $3 $5}
     | var id Type '=' Exp {Var $2 $3 $5}
     | val id '=' Exp {Val $2 Undef $4}
     | var id '=' Exp {Val $2 Undef $4}
+    | id '=' Exp       {Assign $1 $3}
     | return Exp {Return $2}
-    | '{' Prog '}' {Block $2} 
+    | '{' Prog '}' {Block $2}
+    | id '(' Arg ')' {FunCall $1 $2}
 
 Exp : id '(' Arg ')' {FunCall $1 $2}
     | '(' Exp ')' {SubExp $2}
@@ -91,7 +92,7 @@ Exp : id '(' Arg ')' {FunCall $1 $2}
     | false {$1}
     | id {$1}
 
-Arg : Arg ',' Arg {$1:$2}
+Arg : Exp ',' Arg {$1:$3}
     | {- empty -} {[]}
 
 Type : Boolean {$1}
@@ -111,6 +112,7 @@ data Stm = If Exp Stm Stm
             | While Exp Stm
             | Assign Id Exp
             | EmptyStm
+            deriving (Show)
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
         | Or Exp Exp | And Exp Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
@@ -118,5 +120,7 @@ data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp 
         | FunCall Id [Exp]
         | SubExp Exp
         | Negate Exp
+        deriving (Show)
 data Type = Boolean | Int | Float | String | Char | Undef
+            deriving (Show)
 }
