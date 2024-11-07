@@ -7,9 +7,10 @@ module Lexer where
 tokens :-
 
 -- syntax
-$white+             ;
 \/\/.*$             ;
 \/\*(.|\s)*\*\/     ;
+[\n\r]+ {\s -> ENDOFSTATEMENT}
+$white+             ;
 \( {\s -> LPAREN}
 \) {\s -> RPAREN}
 \{ {\s -> LBRACE}

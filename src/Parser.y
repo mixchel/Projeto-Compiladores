@@ -50,7 +50,7 @@ Float {TFLOAT}
 String {TSTRING}
 Char {TCHAR}
 fun {FUN}
-endStm {ENDOFSTATEMENT}
+endofstatement {ENDOFSTATEMENT}
 
 %%
 Start :fun id '(' ')' '{' Prog '}' {Main $6}
@@ -58,17 +58,17 @@ Start :fun id '(' ')' '{' Prog '}' {Main $6}
 Prog : Stm Prog {$1:$2}
      | {- empty -} {[]}
 
-Stm : if '(' Exp ')' Stm else Stm endStm {If $3 $5 $7}
-    | if '(' Exp ')' Stm endStm {If $3 $5 EmptyStm}
-    | while '(' Exp ')' Stm endStm{While $3 $5}
-    | val id ':' Type '=' Exp endStm{Val $2 $4 $6}
-    | var id ':' Type '=' Exp endStm{Var $2 $4 $6}
-    | val id '=' Exp endStm{Val $2 Undef $4}
-    | var id '=' Exp endStm{Val $2 Undef $4}
-    | id '=' Exp       endStm{Assign $1 $3}
-    | return Exp endStm{Return $2}
-    | '{' Prog '}' endStm{Block $2}
-    | Exp endStm {ExpStm $1}
+Stm : if '(' Exp ')' Stm else Stm endofstatement {If $3 $5 $7}
+    | if '(' Exp ')' Stm endofstatement {If $3 $5 EmptyStm}
+    | while '(' Exp ')' Stm endofstatement {While $3 $5}
+    | val id ':' Type '=' Exp endofstatement {Val $2 $4 $6}
+    | var id ':' Type '=' Exp endofstatement {Var $2 $4 $6}
+    | val id '=' Exp endofstatement {Val $2 Undef $4}
+    | var id '=' Exp endofstatement {Val $2 Undef $4}
+    | id '=' Exp endofstatement {Assign $1 $3}
+    | return Exp endofstatement {Return $2}
+    | '{' Prog '}' endofstatement {Block $2}
+    | Exp endofstatement {ExpStm $1}
 
 Exp : id '(' Arg ')' {FunCall $1 $3}
     | '(' Exp ')' {SubExp $2}
@@ -110,10 +110,10 @@ type Id = String
 data AbstractSyntaxTree = Main Prog
     deriving (Show)
 type Prog = [Stm]
-data Stm = If Exp Stm Stm 
-            | Var Id Type Exp 
-            | Val Id Type Exp 
-            | Return Exp 
+data Stm = If Exp Stm Stm
+            | Var Id Type Exp
+            | Val Id Type Exp
+            | Return Exp
             | Block Prog
             | While Exp Stm
             | Assign Id Exp
