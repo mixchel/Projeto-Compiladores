@@ -1,11 +1,11 @@
 module Main where
-import Parser (parse, Prog)
+import Parser (parse, Prog, AbstractSyntaxTree)
 import Lexer (alexScanTokens)
 import PrettyPrint
 import System.Environment (getArgs)
 
 
-makeAst:: String -> Prog
+makeAst:: String -> AbstractSyntaxTree
 makeAst = parse . alexScanTokens
 
 main:: IO()
@@ -16,7 +16,7 @@ main = do
     let tokens = alexScanTokens file
     let ast = makeAst file
     print tokens
-    putStrLn
+    putStrLn ""
     print ast
-    putStrLn
-    print $ prettyProg ast
+    putStrLn ""
+    --print $ prettyProg ast
