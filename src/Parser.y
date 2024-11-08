@@ -55,26 +55,26 @@ endStm {ENDOFSTATEMENT}
 
 
 %%
-Start : fun id '(' ')' '{' Prog '}' {Main $6} 
+Start : fun id '(' ')' endStm '{' Prog '}'{Main $7} 
 
-Prog : Stm Prog {$1:$2}
+Prog : Stm endStm Prog {$1:$3}
      | endStm Prog {$2}
+     | '{' Prog '}' Prog {Block $2:$4}
      | {- empty -} {[]}
 
-Stm : if '(' Exp ')' Stm else Stm endStm {If $3 $5 $7}
-    | if '(' Exp ')' Stm endStm {If $3 $5 EmptyStm}
-    | if '(' Exp ')' endStm Stm else Stm endStm {If $3 $6 $8}
-    | if '(' Exp ')' endStm Stm endStm {If $3 $6 EmptyStm}
-    | while '(' Exp ')' Stm endStm {While $3 $5}
-    | val id ':' Type '=' Exp endStm {Val $2 $4 $6}
-    | var id ':' Type '=' Exp endStm {Var $2 $4 $6}
-    | val id '=' Exp endStm {Val $2 Undef $4}
-    | var id '=' Exp endStm {Val $2 Undef $4}
-    | id '=' Exp endStm      {Assign $1 $3}
-    | return Exp endStm {Return $2}
-    | '{' Prog '}' {Block $2}
-    | Exp endStm {ExpStm $1}
+Stm : if '(' Exp ')' BlkORStm  else BlkORStm {If $3 $5 $7}
+    | if '(' Exp ')' BlkORStm {If $3 $5 EmptyStm}
+    | while '(' Exp ')' BlkORStm {While $3 $5}
+    | val id ':' Type '=' Exp {Val $2 $4 $6}
+    | var id ':' Type '=' Exp {Var $2 $4 $6}
+    | val id '=' Exp {Val $2 Undef $4}
+    | var id '=' Exp {Val $2 Undef $4}
+    | id '=' Exp {Assign $1 $3}
+    | return Exp {Return $2}
+    | Exp {ExpStm $1}
 
+BlkORStm : Stm {$1}
+         | endStm '{' Prog '}' {Block $3}
 
 Exp : id '(' Arg ')' {FunCall $1 $3}
     | '(' Exp ')' {SubExp $2}

@@ -13,8 +13,8 @@ tokens :-
 [\ \t]+ ;
 \( {\s -> LPAREN}
 \) {\s -> RPAREN}
-\{\n* {\s -> LBRACE}
-\} {\s -> RBRACE}
+\n*\{ {\s -> LBRACE}
+\n*\} {\s -> RBRACE}
 "," {\s -> COMMA}
 
 -- types
