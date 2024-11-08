@@ -9,7 +9,8 @@ tokens :-
 -- syntax
 \/\/.*$             ;
 \/\*(.|\s)*\*\/     ;
-(\n|\;)+  {\s -> ENDOFSTATEMENT}
+\n {\s -> NEWLINE}
+\; {\s -> SEMICOLON}
 [\ \t]+ ;
 \( {\s -> LPAREN}
 \) {\s -> RPAREN}
@@ -65,10 +66,10 @@ return {\s -> RETURN}
 
 {
 unquote :: String -> String
-unquote s = init (tail s)
+unquote s = init (tail s) 
 
 
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON | FUN | ENDOFSTATEMENT
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON | FUN | ENDOFSTATEMENT | NEWLINE | SEMICOLON
                 deriving (Show)
 }

@@ -18,4 +18,11 @@ fun main(){
     } else {
         x = 8
     }
+    if (x<6){
+        x = 5
+    }
+    else 
+    {
+        x = 5
+    } 
 }

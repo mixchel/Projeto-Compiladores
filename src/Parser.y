@@ -55,14 +55,15 @@ endStm {ENDOFSTATEMENT}
 
 
 %%
-Start : fun id '(' ')' endStm '{' Prog '}'{Main $7} 
+Start : fun id '(' ')' '{' Prog '}'{Main $6} 
 
 Prog : Stm endStm Prog {$1:$3}
      | endStm Prog {$2}
+     | Stm '{' Prog '}' Prog {$1:(Block $3):$5}
      | '{' Prog '}' Prog {Block $2:$4}
      | {- empty -} {[]}
 
-Stm : if '(' Exp ')' BlkORStm  else BlkORStm {If $3 $5 $7}
+Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
     | if '(' Exp ')' BlkORStm {If $3 $5 EmptyStm}
     | while '(' Exp ')' BlkORStm {While $3 $5}
     | val id ':' Type '=' Exp {Val $2 $4 $6}
@@ -74,7 +75,7 @@ Stm : if '(' Exp ')' BlkORStm  else BlkORStm {If $3 $5 $7}
     | Exp {ExpStm $1}
 
 BlkORStm : Stm {$1}
-         | endStm '{' Prog '}' {Block $3}
+         | '{' Prog '}' {Block $2}
 
 Exp : id '(' Arg ')' {FunCall $1 $3}
     | '(' Exp ')' {SubExp $2}
