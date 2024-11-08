@@ -7,12 +7,13 @@ module Lexer where
 tokens :-
 
 -- syntax
-$white+             ;
 \/\/.*$             ;
 \/\*(.|\s)*\*\/     ;
+(\n|\;)+  {\s -> ENDOFSTATEMENT}
+[\ \t]+ ;
 \( {\s -> LPAREN}
 \) {\s -> RPAREN}
-\{ {\s -> LBRACE}
+\{\n* {\s -> LBRACE}
 \} {\s -> RBRACE}
 "," {\s -> COMMA}
 
@@ -68,6 +69,6 @@ unquote s = init (tail s)
 
 
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON | FUN
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON | FUN | ENDOFSTATEMENT
                 deriving (Show)
 }

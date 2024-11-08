@@ -1,5 +1,7 @@
 fun Main() {
-    x = 5
-    y = 3
-    println("test")
+    if (true) {
+        println("cool")
+    } else {
+        println("pirralho")
+    }
 }
