@@ -2,7 +2,8 @@
 module Parser where
 import Lexer
 }
-%name parse
+%name parse Start
+%name parseStms Prog
 %tokentype { Token }
 %error { parseError }
 %nonassoc '>' '<' ">=" "<=" "==" "!="
