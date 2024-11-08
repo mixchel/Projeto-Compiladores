@@ -56,6 +56,7 @@ while {\s -> WHILE}
 -- symbols & keywords
 var {\s -> VAR}
 val {\s -> VAL}
+fun {\s -> FUN}
 return {\s -> RETURN}
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
 ":" {\s -> COLON}
@@ -67,6 +68,6 @@ unquote s = init (tail s)
 
 
 
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON
+data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON | FUN
                 deriving (Show)
 }

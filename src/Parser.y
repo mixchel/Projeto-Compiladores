@@ -49,8 +49,11 @@ Int {TINT}
 Float {TFLOAT}
 String {TSTRING}
 Char {TCHAR}
+Fun {FUN}
 
 %%
+Start : Fun id '(' ')' '{' Prog '}' {Main $6} 
+
 Prog : Stm Prog {$1:$2}
      | {- empty -} {[]}
 
@@ -102,6 +105,9 @@ Type : Boolean {TBoolean}
      | Char {TChar}
 
 {
+
+data AbstractSyntaxTree = Main Prog
+    deriving (Show)
 type Id = String
 type Prog = [Stm]
 data Stm = If Exp Stm Stm 
