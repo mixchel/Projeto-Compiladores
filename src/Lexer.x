@@ -45,7 +45,7 @@ Boolean {\s -> TBOOL}
 -- values
 [0-9]+ {\s -> INT (read s)}
 [0-9]+"."[0-9]+ {\s -> REAL (read s)}
-\"[a-zA-Z0-9_ ]+\" {\s -> STRING (unquote s)}
+\"[a-zA-Z0-9_\ ]+\" {\s -> STRING (unquote s)}
 \'[a-zA-Z0-9_]\' {\s -> CHAR (s !! 1)}
 true {\s -> BOOL True}
 false {\s -> BOOL False}
