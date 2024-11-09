@@ -1,13 +1,3 @@
-println("pamonha")
-var x = 5
-var y = 5
-if (x<6) {
-    x = 7
-    func('c')
-} else x = 8
-while (x < 3) {
-    func2(true)
+fun main() {
+if (x < 3) {x = 5} else {x = 3}
 }
-z = 1 + 2
-return 2
-a = z + 5
