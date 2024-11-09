@@ -9,7 +9,7 @@ import Lexer
 %nonassoc '>' '<' ">=" "<=" "==" "!="
 %left '+' '-'
 %left '*' '/' '%'
-%left "&&" "||" 
+%left "&&" "||"
 %left NEG '!'
 %token
 
@@ -56,7 +56,7 @@ endStm {ENDOFSTATEMENT}
 
 
 %%
-Start : fun id '(' ')' '{' Prog '}'{Main $6} 
+Start : fun id '(' ')' '{' Prog '}'{Main $6}
 
 Prog : Stm endStm Prog {$1:$3}
      | endStm Prog {$2}
@@ -121,18 +121,19 @@ Type : Boolean {TBoolean}
 
 data AbstractSyntaxTree = Main Prog
     deriving (Show)
+
 type Id = String
 type Prog = [Stm]
-data Stm = If Exp Stm Stm 
-            | Var Id Type Exp 
-            | Val Id Type Exp 
-            | Return Exp 
+
+data Stm = If Exp Stm Stm
+            | Var Id Type Exp
+            | Val Id Type Exp
+            | Return Exp
             | Block Prog
             | While Exp Stm
             | Assign Id Exp
             | ExpStm Exp
             | EmptyStm
-
             deriving (Show)
 
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp

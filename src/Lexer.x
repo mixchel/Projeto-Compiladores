@@ -50,6 +50,7 @@ Boolean {\s -> TBOOL}
 \'[a-zA-Z0-9_]\' {\s -> CHAR (s !! 1)}
 true {\s -> BOOL True}
 false {\s -> BOOL False}
+
 -- flow control
 if {\s -> IF}
 else {\s -> ELSE}
@@ -66,10 +67,15 @@ return {\s -> RETURN}
 
 {
 unquote :: String -> String
-unquote s = init (tail s) 
+unquote s = init (tail s)
 
-
-
-data Token =  PLUS | MINUS | MULT | DIV | MOD | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL | AND | OR | NOT | INT Integer | REAL Double | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | ID String | RETURN | VAR | VAL | ASSIGN | STRING String | CHAR Char | BOOL Bool | TINT | TFLOAT | TSTRING | TCHAR | TBOOL | IF | ELSE | WHILE | COLON | FUN | ENDOFSTATEMENT | NEWLINE | SEMICOLON
-                deriving (Show)
+data Token =  PLUS | MINUS | MULT | DIV | MOD
+           | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
+           | AND | OR | NOT
+           | INT Integer | REAL Double | ID String | STRING String | CHAR Char | BOOL Bool
+           | TINT | TFLOAT | TSTRING | TCHAR | TBOOL
+           | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN | ENDOFSTATEMENT | NEWLINE | SEMICOLON
+           | RETURN | VAR | VAL | ASSIGN
+           | IF | ELSE | WHILE
+           deriving (Show)
 }
