@@ -69,6 +69,7 @@ Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
     | if '(' Exp ')' endStm BlkORStm else BlkORStm {If $3 $6 $8}
     | if '(' Exp ')' endStm BlkORStm {If $3 $6 EmptyStm}
     | while '(' Exp ')' BlkORStm {While $3 $5}
+    | while '(' Exp ')' endStm BlkORStm {While $3 $6}
     | val id ':' Type '=' Exp {Val $2 $4 $6}
     | var id ':' Type '=' Exp {Var $2 $4 $6}
     | val id '=' Exp {Val $2 Undef $4}
