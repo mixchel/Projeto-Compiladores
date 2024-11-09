@@ -12,6 +12,7 @@ wrapRbrace (x:xs) = x : wrapRbrace xs
 wrapRbrace [] = []
 
 mergeEndofStm :: [Token] -> [Token]
+mergeEndofStm (SEMICOLON:NEWLINE:xs) = ENDOFSTATEMENT: mergeEndofStm xs
 mergeEndofStm (NEWLINE:xs) = ENDOFSTATEMENT: mergeEndofStm xs
 mergeEndofStm (SEMICOLON:xs) = ENDOFSTATEMENT: mergeEndofStm xs
 mergeEndofStm (x:xs) = x : mergeEndofStm xs

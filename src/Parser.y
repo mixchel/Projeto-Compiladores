@@ -27,6 +27,7 @@ id {ID $$}
 '=' {ASSIGN}
 ">=" {GREATEREQ}
 "<=" {LESSEQ}
+"==" {EQUAL}
 '>' {GREATER}
 '<' {LESS}
 "!=" {NEQUAL}
@@ -91,6 +92,7 @@ Exp : id '(' Arg ')' {FunCall $1 $3}
     | Exp '>' Exp {Greater $1 $3}
     | Exp "<=" Exp {Lesseq $1 $3}
     | Exp ">=" Exp {Greatereq $1 $3}
+    | Exp "==" Exp {Equal $1 $3}
     | Exp "!=" Exp {Nequal $1 $3}
     | Exp "&&" Exp {And $1 $3}
     | Exp "||" Exp {Or $1 $3}
