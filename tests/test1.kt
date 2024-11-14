@@ -1,5 +1,5 @@
 fun main(){
-    println("pamonha")
+    print("pamonha")
     var x = 5
     if (x<6)
     {
@@ -31,5 +31,5 @@ fun main(){
         x = 3
     y = 9
     z = 3
-    println("Rest in a gratefull universe")
+    print("Rest in a gratefull universe")
 }
