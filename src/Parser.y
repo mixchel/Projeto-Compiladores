@@ -14,7 +14,6 @@ import Lexer
 %token
 
 int {INT $$}
-real {REAL $$}
 bool {BOOL $$}
 str {STRING $$}
 id {ID $$}
@@ -48,24 +47,19 @@ Boolean {TBOOL}
 Int {TINT}
 String {TSTRING}
 fun {FUN}
-endStm {ENDOFSTATEMENT}
 
 
 %%
 Start : fun id '(' ')' '{' Prog '}'{Main $6}
 
-Prog : Stm endStm Prog {$1:$3}
-     | endStm Prog {$2}
+Prog : Stm Prog {$1:$2}
      | Stm '{' Prog '}' Prog {$1:(Block $3):$5}
      | '{' Prog '}' Prog {Block $2:$4}
      | {- empty -} {[]}
 
 Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
     | if '(' Exp ')' BlkORStm {If $3 $5 EmptyStm}
-    | if '(' Exp ')' endStm BlkORStm else BlkORStm {If $3 $6 $8}
-    | if '(' Exp ')' endStm BlkORStm {If $3 $6 EmptyStm}
     | while '(' Exp ')' BlkORStm {While $3 $5}
-    | while '(' Exp ')' endStm BlkORStm {While $3 $6}
     | var id '=' Exp {Val $2 Undef $4}
     | id '=' Exp {Assign $1 $3}
     | return Exp {Return $2}

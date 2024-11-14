@@ -8,9 +8,8 @@ tokens :-
 
 -- syntax
 \/\/.*$             ;
-\/\*(.|\s)*\?\*\/     ;
-\n {\s -> NEWLINE}
-\; {\s -> SEMICOLON}
+\/\*(.|\s)*\?\*\/   ;
+$white+              ;
 [\ \t]+ ;
 \( {\s -> LPAREN}
 \) {\s -> RPAREN}
@@ -67,9 +66,9 @@ unquote s = init (tail s)
 data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
-           | INT Integer | REAL Double | ID String | STRING String | BOOL Bool
+           | INT Integer | ID String | STRING String | BOOL Bool
            | TINT | TSTRING | TBOOL
-           | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN | ENDOFSTATEMENT | NEWLINE | SEMICOLON
+           | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN
            | RETURN | VAR | ASSIGN
            | IF | ELSE | WHILE
            deriving (Show)
