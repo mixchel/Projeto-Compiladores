@@ -15,7 +15,6 @@ $white+              ;
 \) {\s -> RPAREN}
 \n*\{ {\s -> LBRACE}
 \n*\} {\s -> RBRACE}
-"," {\s -> COMMA}
 
 -- arithmetic
 \+ {\s -> PLUS}
@@ -63,7 +62,7 @@ data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
            | INT Integer | ID String | STRING String | BOOL Bool
-           | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | FUN
+           | LPAREN | RPAREN | LBRACE | RBRACE | FUN
            | RETURN | PRINT | READLN | VAR | ASSIGN
            | IF | ELSE | WHILE
            deriving (Show)

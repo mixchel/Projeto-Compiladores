@@ -36,7 +36,6 @@ id {ID $$}
 ')' {RPAREN}
 '{' {LBRACE}
 '}' {RBRACE}
-',' {COMMA}
 var {VAR}
 if {IF}
 else {ELSE}
@@ -85,12 +84,6 @@ Exp : '(' Exp ')' {SubExp $2}
     | bool {Bool $1}
     | str {Str $1}
     | id {Identifier $1}
-
-Arg : Exp Arg1 {$1:$2}
-    | {- empty -} {[]}
-
-Arg1 : ',' Arg {$2}
-     | {- empty -} {[]}
 
 {
 
