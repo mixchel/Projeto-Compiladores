@@ -40,7 +40,6 @@ id {ID $$}
 ',' {COMMA}
 ':' {COLON}
 var {VAR}
-val {VAL}
 if {IF}
 else {ELSE}
 while {WHILE}
@@ -67,7 +66,6 @@ Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
     | if '(' Exp ')' endStm BlkORStm {If $3 $6 EmptyStm}
     | while '(' Exp ')' BlkORStm {While $3 $5}
     | while '(' Exp ')' endStm BlkORStm {While $3 $6}
-    | val id '=' Exp {Val $2 Undef $4}
     | var id '=' Exp {Val $2 Undef $4}
     | id '=' Exp {Assign $1 $3}
     | return Exp {Return $2}

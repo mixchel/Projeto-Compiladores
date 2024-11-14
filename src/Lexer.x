@@ -54,7 +54,6 @@ while {\s -> WHILE}
 
 -- symbols & keywords
 var {\s -> VAR}
-val {\s -> VAL}
 fun {\s -> FUN}
 return {\s -> RETURN}
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
@@ -71,7 +70,7 @@ data Token =  PLUS | MINUS | MULT | DIV | MOD
            | INT Integer | REAL Double | ID String | STRING String | BOOL Bool
            | TINT | TSTRING | TBOOL
            | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN | ENDOFSTATEMENT | NEWLINE | SEMICOLON
-           | RETURN | VAR | VAL | ASSIGN
+           | RETURN | VAR | ASSIGN
            | IF | ELSE | WHILE
            deriving (Show)
 }
