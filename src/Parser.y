@@ -50,7 +50,6 @@ fun {FUN}
 Start : fun id '(' ')' '{' Prog '}'{Main $6}
 
 Prog : Stm Prog {$1:$2}
-     | '{' Prog '}' Prog {Block $2:$4}
      | {- empty -} {[]}
 
 Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
