@@ -51,7 +51,6 @@ var {\s -> VAR}
 fun {\s -> FUN}
 return {\s -> RETURN}
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
-":" {\s -> COLON}
 "=" {\s -> ASSIGN}
 
 {
@@ -62,7 +61,7 @@ data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
            | INT Integer | ID String | STRING String | BOOL Bool
-           | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN
+           | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | FUN
            | RETURN | VAR | ASSIGN
            | IF | ELSE | WHILE
            deriving (Show)

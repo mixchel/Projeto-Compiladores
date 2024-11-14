@@ -37,7 +37,6 @@ id {ID $$}
 '{' {LBRACE}
 '}' {RBRACE}
 ',' {COMMA}
-':' {COLON}
 var {VAR}
 if {IF}
 else {ELSE}
