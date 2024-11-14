@@ -2,6 +2,7 @@ module Main where
 import Parser (parse, Prog, AbstractSyntaxTree, parseStms)
 import Lexer (alexScanTokens, Token (RBRACE, NEWLINE, ENDOFSTATEMENT, SEMICOLON, ELSE))
 import PrettyPrint
+import CodeGenerator
 import System.Environment (getArgs)
 import GHC.IO.Handle (Newline)
 
@@ -32,6 +33,9 @@ prepareTokens = mergeEndofStm . removeIrrelevantNewlines . wrapRbrace
 makeAst:: String -> AbstractSyntaxTree
 makeAst = parse . prepareTokens . alexScanTokens
 
+--generateCode :: AbstractSyntaxTree -> []
+--generateCode ast = generate ast
+
 makeStmAst :: String -> Prog
 makeStmAst xs = parseStms $ prepareTokens (alexScanTokens xs ++ [ENDOFSTATEMENT])
 
@@ -42,8 +46,10 @@ main = do
     file <- readFile path
     let tokens = prepareTokens $ alexScanTokens file
     let ast = makeAst file
+--    let code = generateCode ast
     print tokens
     putStrLn ""
     print ast
     putStrLn ""
+--    print code
     --print $ prettyProg ast
