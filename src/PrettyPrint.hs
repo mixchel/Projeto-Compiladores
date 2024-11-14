@@ -23,10 +23,8 @@ prettyStm (Var id e1) = pack "var" <> pack id <> pack "=" <> prettyExp e1 <> pac
 prettyStm (Assign id e1) = pack id <> pack "=" <> prettyExp e1 <> pack "\n"
 prettyStm (Return e1) = pack "Return" <> prettyExp e1 <> pack "\n"
 prettyStm (Block prog) = pack "{" <> prettyProg prog <> pack "}" <> pack "\n"
-prettyStm (ExpStm (FunCall id arg)) = pack id <> pack "(" <> prettyArg arg <> pack ")" <> pack "\n"
 
 prettyExp :: Exp -> Text
-prettyExp (FunCall id arg) = pack id <> pack "(" <> prettyArg arg <> pack ")"
 prettyExp (SubExp e1) = pack "(" <> prettyExp e1 <> pack ")"
 prettyExp (Negate e1) = pack "-" <> prettyExp e1
 prettyExp (Plus e1 e2) = prettyExp e1 <> pack " + " <> prettyExp e2

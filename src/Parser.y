@@ -64,8 +64,7 @@ Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
 BlkORStm : Stm {$1}
          | '{' Prog '}' {Block $2}
 
-Exp : id '(' Arg ')' {FunCall $1 $3}
-    | '(' Exp ')' {SubExp $2}
+Exp : '(' Exp ')' {SubExp $2}
     | '-' Exp %prec NEG { Negate $2 }
     | Exp '+' Exp {Plus $1 $3}
     | Exp '-' Exp {Minus $1 $3}
@@ -117,7 +116,6 @@ data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp 
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
         | Int Integer | Bool Bool | Str String
         | Readln
-        | FunCall Id [Exp]
         | SubExp Exp
         | Negate Exp
         | Identifier Id
