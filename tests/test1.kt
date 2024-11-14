@@ -4,7 +4,6 @@ fun main(){
     if (x<6)
     {
         x = 7
-        func('c')
     } else  {x = 8}
     x = 2
     while (true) x = 5
