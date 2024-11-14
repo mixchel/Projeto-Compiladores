@@ -8,7 +8,7 @@ tokens :-
 
 -- syntax
 \/\/.*$             ;
-\/\*(.|\s)*\*\/     ;
+\/\*(.|\s)*?\*\/     ;
 \n {\s -> NEWLINE}
 \; {\s -> SEMICOLON}
 [\ \t]+ ;
