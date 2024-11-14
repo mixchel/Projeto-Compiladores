@@ -9,9 +9,6 @@ unquote = filter (/= '\"')
 prettyProg :: [Parser.Stm] -> Text
 prettyProg = foldr ((<>) . prettyStm) (pack "")
 
-prettyType :: Type -> Text
-prettyType x = pack (show x)
-
 prettyArg :: [Exp] -> Text
 prettyArg = foldr ((<>) . prettyExp) (pack "")
 
@@ -19,7 +16,7 @@ prettyStm :: Stm -> Text
 prettyStm (If e1 s1 EmptyStm) = pack "If"  <> pack "(" <> prettyExp e1 <> pack ")" <> prettyStm s1 <> pack "\n"
 prettyStm (If e1 s1 s2) = pack "If" <> pack "(" <> prettyExp e1 <> pack ")" <> prettyStm s1 <>pack "else" <> prettyStm s2 <> pack "\n"
 prettyStm (While e1 s1) = pack "While" <> pack "(" <> prettyExp e1 <> pack ")" <> prettyStm s1 <> pack "\n"
-prettyStm (Var id Undef e1) = pack "var" <> pack id <> pack "=" <> prettyExp e1 <> pack "\n"
+prettyStm (Var id e1) = pack "var" <> pack id <> pack "=" <> prettyExp e1 <> pack "\n"
 prettyStm (Assign id e1) = pack id <> pack "=" <> prettyExp e1 <> pack "\n"
 prettyStm (Return e1) = pack "Return" <> prettyExp e1 <> pack "\n"
 prettyStm (Block prog) = pack "{" <> prettyProg prog <> pack "}" <> pack "\n"

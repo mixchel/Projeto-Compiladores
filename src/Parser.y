@@ -43,9 +43,6 @@ if {IF}
 else {ELSE}
 while {WHILE}
 return {RETURN}
-Boolean {TBOOL}
-Int {TINT}
-String {TSTRING}
 fun {FUN}
 
 
@@ -53,14 +50,13 @@ fun {FUN}
 Start : fun id '(' ')' '{' Prog '}'{Main $6}
 
 Prog : Stm Prog {$1:$2}
-     | Stm '{' Prog '}' Prog {$1:(Block $3):$5}
      | '{' Prog '}' Prog {Block $2:$4}
      | {- empty -} {[]}
 
 Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
     | if '(' Exp ')' BlkORStm {If $3 $5 EmptyStm}
     | while '(' Exp ')' BlkORStm {While $3 $5}
-    | var id '=' Exp {Val $2 Undef $4}
+    | var id '=' Exp {Var $2 $4}
     | id '=' Exp {Assign $1 $3}
     | return Exp {Return $2}
     | Exp {ExpStm $1}
@@ -96,10 +92,6 @@ Arg : Exp Arg1 {$1:$2}
 Arg1 : ',' Arg {$2}
      | {- empty -} {[]}
 
-Type : Boolean {TBoolean}
-     | Int {TInt}
-     | String {TString}
-
 {
 
 data AbstractSyntaxTree = Main Prog
@@ -109,8 +101,7 @@ type Id = String
 type Prog = [Stm]
 
 data Stm = If Exp Stm Stm
-            | Var Id Type Exp
-            | Val Id Type Exp
+            | Var Id Exp
             | Return Exp
             | Block Prog
             | While Exp Stm
@@ -128,9 +119,6 @@ data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp 
         | Negate Exp
         | Identifier Id
         deriving (Show)
-
-data Type = TBoolean | TInt | TString | Undef
-            deriving (Show)
 
 parseError :: [Token] -> a
 parseError _ = error "Parse error"

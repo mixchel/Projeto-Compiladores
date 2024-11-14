@@ -17,11 +17,6 @@ $white+              ;
 \n*\} {\s -> RBRACE}
 "," {\s -> COMMA}
 
--- types
-Int {\s -> TINT}
-String {\s -> TSTRING}
-Boolean {\s -> TBOOL}
-
 -- arithmetic
 \+ {\s -> PLUS}
 \- {\s -> MINUS}
@@ -67,7 +62,6 @@ data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
            | INT Integer | ID String | STRING String | BOOL Bool
-           | TINT | TSTRING | TBOOL
            | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN
            | RETURN | VAR | ASSIGN
            | IF | ELSE | WHILE
