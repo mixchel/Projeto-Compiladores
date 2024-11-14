@@ -3,6 +3,9 @@ import Data.Text (Text, pack)
 import Parser 
 import Data.Sequence (Seq(Empty))
 
+-- TODO: Add readln rules
+-- TODO: consider just ditching this file ;-;
+
 unquote:: String -> String
 unquote = filter (/= '\"')
 

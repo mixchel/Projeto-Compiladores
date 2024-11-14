@@ -43,6 +43,7 @@ else {ELSE}
 while {WHILE}
 return {RETURN}
 print {PRINT}
+readln {READLN}
 fun {FUN}
 
 
@@ -80,6 +81,7 @@ Exp : id '(' Arg ')' {FunCall $1 $3}
     | Exp "&&" Exp {And $1 $3}
     | Exp "||" Exp {Or $1 $3}
     | '!' Exp {Not $2}
+    | readln '(' ')'{Readln}
     | int {Int $1}
     | bool {Bool $1}
     | str {Str $1}
@@ -114,6 +116,7 @@ data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp 
         | Or Exp Exp | And Exp Exp | Not Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
         | Int Integer | Bool Bool | Str String
+        | Readln
         | FunCall Id [Exp]
         | SubExp Exp
         | Negate Exp
