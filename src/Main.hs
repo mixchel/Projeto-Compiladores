@@ -2,7 +2,7 @@ module Main where
 import Parser (parse, Prog, AbstractSyntaxTree, parseStms)
 import Lexer (alexScanTokens, Token (RBRACE, NEWLINE, ENDOFSTATEMENT, SEMICOLON, ELSE))
 import PrettyPrint
-import CodeGenerator
+--import CodeGenerator
 import System.Environment (getArgs)
 import GHC.IO.Handle (Newline)
 

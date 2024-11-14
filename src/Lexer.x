@@ -8,7 +8,7 @@ tokens :-
 
 -- syntax
 \/\/.*$             ;
-\/\*(.|\s)*?\*\/     ;
+\/\*(.|\s)*\?\*\/     ;
 \n {\s -> NEWLINE}
 \; {\s -> SEMICOLON}
 [\ \t]+ ;
@@ -20,9 +20,7 @@ tokens :-
 
 -- types
 Int {\s -> TINT}
-Float {\s -> TFLOAT}
 String {\s -> TSTRING}
-Char {\s -> TCHAR}
 Boolean {\s -> TBOOL}
 
 -- arithmetic
@@ -45,9 +43,7 @@ Boolean {\s -> TBOOL}
 
 -- values
 [0-9]+ {\s -> INT (read s)}
-[0-9]+"."[0-9]+ {\s -> REAL (read s)}
 \"[a-zA-Z0-9_\ ]+\" {\s -> STRING (unquote s)}
-\'[a-zA-Z0-9_]\' {\s -> CHAR (s !! 1)}
 true {\s -> BOOL True}
 false {\s -> BOOL False}
 
@@ -72,8 +68,8 @@ unquote s = init (tail s)
 data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
-           | INT Integer | REAL Double | ID String | STRING String | CHAR Char | BOOL Bool
-           | TINT | TFLOAT | TSTRING | TCHAR | TBOOL
+           | INT Integer | REAL Double | ID String | STRING String | BOOL Bool
+           | TINT | TSTRING | TBOOL
            | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | COLON | FUN | ENDOFSTATEMENT | NEWLINE | SEMICOLON
            | RETURN | VAR | VAL | ASSIGN
            | IF | ELSE | WHILE

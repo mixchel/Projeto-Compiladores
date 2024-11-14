@@ -48,8 +48,6 @@ prettyExp (Not e1) = pack "!" <> prettyExp e1
 
 -- terminal symbols
 prettyExp (Int e) = pack $ unquote $ show e
-prettyExp (Float e) = pack $ unquote $ show e
 prettyExp (Bool e) = pack $ unquote $ show e
 prettyExp (Str e) = pack $ unquote $ show e
-prettyExp (Char e) = pack $ unquote $ show e
 prettyExp (Identifier e) = pack $ unquote $ show e
