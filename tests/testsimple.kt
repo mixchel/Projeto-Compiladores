@@ -1,4 +1,4 @@
-fun Main() {
+fun main() {
     if (true) {
         println("cool")
     } else {

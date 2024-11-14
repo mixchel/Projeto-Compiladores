@@ -1,7 +1,7 @@
 fun main(){
-    x = 0;
-    y = 1;
-    result = 0;
+    x = 0
+    y = 1
+    result = 0
     n = 20
     if(n < 0){
          print("Invalid number")
