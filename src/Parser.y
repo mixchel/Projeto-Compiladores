@@ -42,6 +42,7 @@ if {IF}
 else {ELSE}
 while {WHILE}
 return {RETURN}
+print {PRINT}
 fun {FUN}
 
 
@@ -58,7 +59,7 @@ Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
     | var id '=' Exp {Var $2 $4}
     | id '=' Exp {Assign $1 $3}
     | return Exp {Return $2}
-    | Exp {ExpStm $1}
+    | print '(' Exp ')' {Print $3}
 
 BlkORStm : Stm {$1}
          | '{' Prog '}' {Block $2}
@@ -102,6 +103,7 @@ type Prog = [Stm]
 data Stm = If Exp Stm Stm
             | Var Id Exp
             | Return Exp
+            | Print Exp
             | Block Prog
             | While Exp Stm
             | Assign Id Exp

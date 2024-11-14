@@ -50,6 +50,7 @@ while {\s -> WHILE}
 var {\s -> VAR}
 fun {\s -> FUN}
 return {\s -> RETURN}
+print {\s -> PRINT}
 [_a-zA-z]+[_a-zA-Z0-9]* {\s -> ID s}
 "=" {\s -> ASSIGN}
 
@@ -62,7 +63,7 @@ data Token =  PLUS | MINUS | MULT | DIV | MOD
            | AND | OR | NOT
            | INT Integer | ID String | STRING String | BOOL Bool
            | LPAREN | RPAREN | LBRACE | RBRACE | COMMA | FUN
-           | RETURN | VAR | ASSIGN
+           | RETURN | PRINT | VAR | ASSIGN
            | IF | ELSE | WHILE
            deriving (Show)
 }
