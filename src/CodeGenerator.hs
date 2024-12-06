@@ -14,24 +14,19 @@ data Instr = MOVE Temp Temp
            | RETURN' Temp
            | NEG Temp
 
--- ISSUE: BinOP names conflict with data Exp operators
 data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq
-
 type Prog = [Stm]
-
 type Temp = String
 type Id = String
 type Label = String
-
 type Table = [(String, Int)]
-
 type Supply = (Int, Int)
 
 newTemp :: Supply -> (Temp, Supply)
 newTemp (temps, labels) = ("t"++show temps, (temps +1, labels))
 
 newLabel :: Supply -> (Label, Supply)
-newLabel (temps, labels) = ("L"++show labels, (temps, labels+1))
+newLabel (temps, labels) = ("l"++show labels, (temps, labels+1))
 
 -- TODO: subexp, identifier
 transExp :: Exp -> Table -> Temp -> Supply -> ([Instr], Supply)
@@ -99,12 +94,13 @@ transStm stm table supply = case stm of
                 in (code, supply2)
 
 {-
-Generate intermediary code
-Statements [0/9 rules]
-Expressions [0/21]
-Prog
+> Generate intermediary code:
+Prog [0/2] (sequence of stms, and empty)
+BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
+Statements [5/7] (var, id)
+Expressions [4/19] (subexp, minus, times, div, mod, less, greater, lesseq, greatereq, equal, nequal, and, or, not, id)
 Release temporary/registers (function)
 Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
-Generate assembly
+> Generate assembly
 -}
