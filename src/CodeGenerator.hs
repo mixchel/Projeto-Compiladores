@@ -79,7 +79,6 @@ transExp (Negate e) table dest supply
     in (code, supply2)
 
 -- TODO: Is it necessary to implement the relational OP (==, <, >, <=, >=) in transExp if I already have them here?
--- TODO: AND, OR and NOT (!)
 -- TODO: necessary to consider that a condition may be a SUM, a SUB, a DIV, etc...?
 transCond :: Exp -> Table -> Label -> Label -> Supply -> ([Instr], Supply)
 transCond e table l1 l2 supply = case e of
@@ -138,7 +137,6 @@ transCond e table l1 l2 supply = case e of
                      --              code = code1 ++ code2 ++ [COND  t1 t2 l1 l2]
                      --           in (code, supply4) --ISSUE: datatype COND requires 2 expressions
 
--- TODO:  Var Id Exp, Block Prog, Assign Id Exp, ExpStm Exp
 -- NOTE: Var Id Exp and Assign Id Exp might require a new new function, since they must return a new table (I believe)
 -- TODO: The RETURN instruction, is it necessary? (since we dont have function calling)
 transStm :: Stm -> Table -> Supply -> ([Instr], Supply)
