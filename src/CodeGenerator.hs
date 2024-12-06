@@ -51,7 +51,6 @@ type Prog = [Stm]
 type Temp = String
 type Id = String
 type Label = String
-type Table = [(String, Int)]
 
 type Supply = (Int, Int)
 
