@@ -28,7 +28,7 @@ data Stm = If Exp Stm
 -- data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
 --         | Or Exp Exp | And Exp Exp | Not Exp
 --         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
---         | Int Integer | Bool Bool | Str String
+--         | Int Int
 --         | Readln
 --         | SubExp Exp
 --         | Negate Exp
@@ -37,7 +37,7 @@ data Stm = If Exp Stm
 -- ISSUE: Had to change Int Integer to Int Int so transExp (Int n) didn't raise a type error due to expecting an Int but getting an Integer
 -- ISSUE: Had to transform the table this way to remove duplication
 data Exp = Op BinOP Exp Exp
-        | Int Int | Bool Bool | Str String
+        | Int Int
         | Readln
         | SubExp Exp
         | Negate Exp
@@ -60,8 +60,7 @@ newTemp (temps, labels) = ("t"++show temps, (temps +1, labels))
 newLabel :: Supply -> (Label, Supply)
 newLabel (temps, labels) = ("L"++show labels, (temps, labels+1))
 
--- ISSUE: n is identified as an integer, for some reason??
--- TODO: bool, string, subexp, identifier
+-- TODO: subexp, identifier
 transExp :: Exp -> Table -> Temp -> Supply -> ([Instr], Supply)
 transExp (Int n) table dest supply = ([MOVEI dest n], supply)
 transExp Readln table dest supply = ([READLN], supply)
