@@ -52,8 +52,8 @@ Start : fun id '(' ')' '{' Prog '}'{Main $6}
 Prog : Stm Prog {$1:$2}
      | {- empty -} {[]}
 
-Stm : if '(' Exp ')' BlkORStm else BlkORStm {If $3 $5 $7}
-    | if '(' Exp ')' BlkORStm {If $3 $5 EmptyStm}
+Stm : if '(' Exp ')' BlkORStm else BlkORStm {IfElse $3 $5 $7}
+    | if '(' Exp ')' BlkORStm {If $3 $5}
     | while '(' Exp ')' BlkORStm {While $3 $5}
     | var id '=' Exp {Var $2 $4}
     | id '=' Exp {Assign $1 $3}
@@ -93,7 +93,8 @@ data AbstractSyntaxTree = Main Prog
 type Id = String
 type Prog = [Stm]
 
-data Stm = If Exp Stm Stm
+data Stm = If Exp Stm
+            | IfElse Exp Stm Stm
             | Var Id Exp
             | Return Exp
             | Print Exp

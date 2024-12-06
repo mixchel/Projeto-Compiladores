@@ -15,7 +15,7 @@ data Instr = MOVE Temp Temp
            | NEG Temp
 
 data Stm = If Exp Stm
-            | IfElse Exp Stm Stm -- TODO: maybe merge with If Exp Stm, using empty Statements, but I'm unsure how to do that
+            | IfElse Exp Stm Stm
             | Var Id Exp
             | Return Exp
             | Print Exp
@@ -51,6 +51,8 @@ type Prog = [Stm]
 type Temp = String
 type Id = String
 type Label = String
+
+type Table = [(String, Int)]
 
 type Supply = (Int, Int)
 
@@ -94,12 +96,12 @@ transCond e table l1 l2 supply = case e of
 transStm :: Stm -> Table -> Supply -> ([Instr], Supply)
 transStm EmptyStm table supply = ([], supply)
 transStm stm table supply = case stm of
-  (If e stm1) -> let (l1, supply1) = newLabel supply
-                     (l2, supply2) = newLabel supply1
-                     (code1, supply3) = transCond e table l1 l2 supply2
-                     (code2, supply4) = transStm stm1 table supply3
-                     code = code1 ++ [LABEL l1] ++ code2 ++ [LABEL l2]
-                 in (code, supply4)
+  (If e stm) -> let (l1, supply1) = newLabel supply
+                    (l2, supply2) = newLabel supply1
+                    (code1, supply3) = transCond e table l1 l2 supply2
+                    (code2, supply4) = transStm stm table supply3
+                    code = code1 ++ [LABEL l1] ++ code2 ++ [LABEL l2]
+                in (code, supply4)
   (IfElse e stm1 stm2) -> let (l1, supply1) = newLabel supply
                               (l2, supply2) = newLabel supply1
                               (l3, supply3) = newLabel supply2
