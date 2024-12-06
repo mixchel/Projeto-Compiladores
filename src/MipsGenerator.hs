@@ -13,11 +13,9 @@ transInstr MOVEI t i = addi t, i, $zero
 transInstr LABEL l = l ++ ": "
 transInstr JUMP l = j l
 transInstr COND Temp BinOP Temp Label Label
--- TODO: this implementation of READLN only works with strings
 transInstr READLN = la $a0, target
                     li $v0, 5
                     syscall
--- TODO: this implementation of READLN only works with strings
 transInstr PRINT' t = la $a0, target
                       li $v0, 1
                       syscall
