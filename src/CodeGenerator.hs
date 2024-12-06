@@ -42,7 +42,7 @@ transExp (Plus e1 e2) table dest supply -- TODO: check if there's a better way t
         (t2, supply2) = newTemp supply1
         (code1, supply3) = transExp e1 table t1 supply2
         (code2, supply4) = transExp e2 table t2 supply3
-        code = code1 ++ code2 ++ [ADD dest t1 t2]
+        code = code1 ++ code2 ++ [OP Sum dest t1 t2]
     in (code, supply4)
 transExp (Negate e) table dest supply
   = let (t1, supply1) = newTemp supply
