@@ -14,8 +14,6 @@ import Lexer
 %token
 
 int {INT $$}
-bool {BOOL $$}
-str {STRING $$}
 id {ID $$}
 '+' {PLUS}
 '-' {MINUS}
@@ -81,8 +79,6 @@ Exp : '(' Exp ')' {SubExp $2}
     | '!' Exp {Not $2}
     | readln '(' ')'{Readln}
     | int {Int $1}
-    | bool {Bool $1}
-    | str {Str $1}
     | id {Identifier $1}
 
 {
@@ -108,7 +104,7 @@ data Stm = If Exp Stm
 data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp Exp
         | Or Exp Exp | And Exp Exp | Not Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
-        | Int Integer | Bool Bool | Str String
+        | Int Int
         | Readln
         | SubExp Exp
         | Negate Exp

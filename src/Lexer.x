@@ -36,9 +36,6 @@ $white+              ;
 
 -- values
 [0-9]+ {\s -> INT (read s)}
-\"[a-zA-Z0-9_\ ]+\" {\s -> STRING (unquote s)}
-true {\s -> BOOL True}
-false {\s -> BOOL False}
 
 -- flow control
 if {\s -> IF}
@@ -61,7 +58,7 @@ unquote s = init (tail s)
 data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
-           | INT Integer | ID String | STRING String | BOOL Bool
+           | INT Int | ID String
            | LPAREN | RPAREN | LBRACE | RBRACE | FUN
            | RETURN | PRINT | READLN | VAR | ASSIGN
            | IF | ELSE | WHILE
