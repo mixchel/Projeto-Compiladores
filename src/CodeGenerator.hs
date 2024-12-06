@@ -29,16 +29,48 @@ newTemp (temps, labels) = ("t"++show temps, (temps +1, labels))
 newLabel :: Supply -> (Label, Supply)
 newLabel (temps, labels) = ("l"++show labels, (temps, labels+1))
 
+popTemp :: Int -> Supply -> Supply
+popTemp x (temps, labels) = (temps - x, labels)
+
 -- TODO: subexp, identifier
+-- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
 transExp :: Exp -> Table -> Temp -> Supply -> ([Instr], Supply)
 transExp (Int n) table dest supply = ([MOVEI dest n], supply)
 transExp Readln table dest supply = ([READLN], supply)
-transExp (Plus e1 e2) table dest supply -- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
+transExp (Plus e1 e2) table dest supply
   = let (t1, supply1) = newTemp supply
         (t2, supply2) = newTemp supply1
         (code1, supply3) = transExp e1 table t1 supply2
         (code2, supply4) = transExp e2 table t2 supply3
         code = code1 ++ code2 ++ [OP Sum dest t1 t2]
+    in (code, supply4)
+transExp (Minus e1 e2) table dest supply
+  = let (t1, supply1) = newTemp supply
+        (t2, supply2) = newTemp supply1
+        (code1, supply3) = transExp e1 table t1 supply2
+        (code2, supply4) = transExp e2 table t2 supply3
+        code = code1 ++ code2 ++ [OP Sub dest t1 t2]
+    in (code, supply4)
+transExp (Times e1 e2) table dest supply
+  = let (t1, supply1) = newTemp supply
+        (t2, supply2) = newTemp supply1
+        (code1, supply3) = transExp e1 table t1 supply2
+        (code2, supply4) = transExp e2 table t2 supply3
+        code = code1 ++ code2 ++ [OP Mult dest t1 t2]
+    in (code, supply4)
+transExp (Div e1 e2) table dest supply
+  = let (t1, supply1) = newTemp supply
+        (t2, supply2) = newTemp supply1
+        (code1, supply3) = transExp e1 table t1 supply2
+        (code2, supply4) = transExp e2 table t2 supply3
+        code = code1 ++ code2 ++ [OP Divide dest t1 t2]
+    in (code, supply4)
+transExp (Mod e1 e2) table dest supply
+  = let (t1, supply1) = newTemp supply
+        (t2, supply2) = newTemp supply1
+        (code1, supply3) = transExp e1 table t1 supply2
+        (code2, supply4) = transExp e2 table t2 supply3
+        code = code1 ++ code2 ++ [OP Modulus dest t1 t2]
     in (code, supply4)
 transExp (Negate e) table dest supply
   = let (t1, supply1) = newTemp supply
@@ -147,7 +179,7 @@ transStm stm table supply = case stm of
 Prog [0/2] (sequence of stms, and empty)
 BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
 Statements [5/7] (var, id)
-Expressions [12/19] (subexp, minus, times, div, mod, not, id)
+Expressions [16/19] (subexp, not, id)
 Release temporary/registers (function)
 Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
