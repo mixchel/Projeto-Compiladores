@@ -8,13 +8,14 @@ data Instr = MOVE Temp Temp
            | OPI BinOP Temp Temp Int
            | LABEL Label
            | JUMP Label
-           | COND Temp BinOP Temp Label Label
+           | COND BinOP Temp Temp Label Label
            | READLN
            | PRINT' Temp
            | RETURN' Temp
            | NEG Temp
 
-data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq
+-- ISSUE: Ambiguity between Parsers Exp And/Or labels and Cond BinOP And/Or
+data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
 type Prog = [Stm]
 type Temp = String
 type Id = String
@@ -45,17 +46,65 @@ transExp (Negate e) table dest supply
         code = code1 ++ [NEG t1]
     in (code, supply2)
 
--- ISSUE: transCond needs to know the Relational Operator to supply it to the generated intermediary code (relop)
--- ISSUE: transCond will accept any operator (relational or arithmetic)
+-- TODO: Is it necessary to implement the relational OP (==, <, >, <=, >=) in transExp if I already have them here?
+-- TODO: AND, OR and NOT (!)
+-- TODO: necessary to consider that a condition may be a SUM, a SUB, a DIV, etc...?
 transCond :: Exp -> Table -> Label -> Label -> Supply -> ([Instr], Supply)
-transCond e table l1 l2 supply = ([], supply) --TODO: remove this line, I only added it so it would compile
--- transCond e table l1 l2 supply = case e of
---                      Op op e1 e2 -> let (t1, supply1) = newTemp supply
---                                         (t2, supply2) = newTemp supply1
---                                         (code1, supply3) = transExp e1 table t1 supply2
---                                         (code2, supply4) = transExp e2 table t2 supply3
---                                         code = code1 ++ code2 ++ [COND t1 op t2 l1 l2]
---                                     in (code, supply4)
+transCond e table l1 l2 supply = case e of
+                     Equal e1 e2 -> let (t1, supply1) = newTemp supply
+                                        (t2, supply2) = newTemp supply1
+                                        (code1, supply3) = transExp e1 table t1 supply2
+                                        (code2, supply4) = transExp e2 table t2 supply3
+                                        code = code1 ++ code2 ++ [COND Eq t1 t2 l1 l2]
+                                     in (code, supply4)
+                     Nequal e1 e2 -> let (t1, supply1) = newTemp supply
+                                         (t2, supply2) = newTemp supply1
+                                         (code1, supply3) = transExp e1 table t1 supply2
+                                         (code2, supply4) = transExp e2 table t2 supply3
+                                         code = code1 ++ code2 ++ [COND Neq t1 t2 l1 l2]
+                                      in (code, supply4)
+                     Greatereq e1 e2 -> let (t1, supply1) = newTemp supply
+                                            (t2, supply2) = newTemp supply1
+                                            (code1, supply3) = transExp e1 table t1 supply2
+                                            (code2, supply4) = transExp e2 table t2 supply3
+                                            code = code1 ++ code2 ++ [COND Gteq t1 t2 l1 l2]
+                                        in (code, supply4)
+                     Lesseq e1 e2 -> let (t1, supply1) = newTemp supply
+                                         (t2, supply2) = newTemp supply1
+                                         (code1, supply3) = transExp e1 table t1 supply2
+                                         (code2, supply4) = transExp e2 table t2 supply3
+                                         code = code1 ++ code2 ++ [COND Lteq t1 t2 l1 l2]
+                                      in (code, supply4)
+                     Greater e1 e2 -> let (t1, supply1) = newTemp supply
+                                          (t2, supply2) = newTemp supply1
+                                          (code1, supply3) = transExp e1 table t1 supply2
+                                          (code2, supply4) = transExp e2 table t2 supply3
+                                          code = code1 ++ code2 ++ [COND Gt t1 t2 l1 l2]
+                                       in (code, supply4)
+                     Less e1 e2 -> let (t1, supply1) = newTemp supply
+                                       (t2, supply2) = newTemp supply1
+                                       (code1, supply3) = transExp e1 table t1 supply2
+                                       (code2, supply4) = transExp e2 table t2 supply3
+                                       code = code1 ++ code2 ++ [COND Lt t1 t2 l1 l2]
+                                    in (code, supply4)
+                     And e1 e2 -> let (t1, supply1) = newTemp supply
+                                      (t2, supply2) = newTemp supply1
+                                      (code1, supply3) = transExp e1 table t1 supply2
+                                      (code2, supply4) = transExp e2 table t2 supply3
+                                      code = code1 ++ code2 ++ [COND AndC t1 t2 l1 l2]
+                                   in (code, supply4)
+                     Or e1 e2 -> let (t1, supply1) = newTemp supply
+                                     (t2, supply2) = newTemp supply1
+                                     (code1, supply3) = transExp e1 table t1 supply2
+                                     (code2, supply4) = transExp e2 table t2 supply3
+                                     code = code1 ++ code2 ++ [COND OrC t1 t2 l1 l2]
+                                  in (code, supply4)
+                     -- Not e -> let (t1, supply1) = newTemp supply
+                     --              (t2, supply2) = newTemp supply1
+                     --              (code1, supply3) = transExp e1 table t1 supply2
+                     --              (code2, supply4) = transExp e2 table t2 supply3
+                     --              code = code1 ++ code2 ++ [COND  t1 t2 l1 l2]
+                     --           in (code, supply4) --ISSUE: datatype COND requires 2 expressions
 
 -- TODO:  Var Id Exp, Block Prog, Assign Id Exp, ExpStm Exp
 -- NOTE: Var Id Exp and Assign Id Exp might require a new new function, since they must return a new table (I believe)
@@ -98,7 +147,7 @@ transStm stm table supply = case stm of
 Prog [0/2] (sequence of stms, and empty)
 BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
 Statements [5/7] (var, id)
-Expressions [4/19] (subexp, minus, times, div, mod, less, greater, lesseq, greatereq, equal, nequal, and, or, not, id)
+Expressions [12/19] (subexp, minus, times, div, mod, not, id)
 Release temporary/registers (function)
 Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
