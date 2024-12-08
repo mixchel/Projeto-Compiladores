@@ -13,6 +13,7 @@ data Instr = MOVE Temp Temp
            | PRINT' Temp
            | RETURN' Temp
            | NEG Temp
+           | NOT Temp
     deriving Show
 
 -- ISSUE: Ambiguity between Parsers Exp And/Or labels and Cond BinOP And/Or
@@ -79,6 +80,11 @@ transExp (Negate e) table dest supply
         (code1, supply2) = transExp e table t1 supply1
         code = code1 ++ [NEG t1]
     in (code, supply2)
+transExp (Not e) table dest supply
+  = let (t1, supply1) = newTemp supply
+        (code1, supply2) = transExp e table t1 supply1
+        code = code1 ++ [NOT t1]
+    in (code, supply2)
 
 -- TODO: Is it necessary to implement the relational OP (==, <, >, <=, >=) in transExp if I already have them here?
 -- TODO: necessary to consider that a condition may be a SUM, a SUB, a DIV, etc...?
@@ -132,12 +138,12 @@ transCond e table l1 l2 supply = case e of
                                      (code2, supply4) = transExp e2 table t2 supply3
                                      code = code1 ++ code2 ++ [COND OrC t1 t2 l1 l2]
                                   in (code, supply4)
-                     -- Not e -> let (t1, supply1) = newTemp supply
-                     --              (t2, supply2) = newTemp supply1
-                     --              (code1, supply3) = transExp e1 table t1 supply2
-                     --              (code2, supply4) = transExp e2 table t2 supply3
-                     --              code = code1 ++ code2 ++ [COND  t1 t2 l1 l2]
-                     --           in (code, supply4) --ISSUE: datatype COND requires 2 expressions
+                     Not e -> let (t1, supply1) = newTemp supply
+                                  (t2, supply2) = newTemp supply1
+                                  (code1, supply3) = transExp (Not e) table t1 supply2
+                                  code = code1 ++ [COND AndC t1 t1 l1 l2]
+                               in (code, supply3) --ISSUE: datatype COND requires 2 expressions
+                               -- Current fix for issue: And the condition with itself
 
 -- NOTE: Var Id Exp and Assign Id Exp might require a new new function, since they must return a new table (I believe)
 -- TODO: The RETURN instruction, is it necessary? (since we dont have function calling)
@@ -179,7 +185,7 @@ transStm stm table supply = case stm of
 Prog [0/2] (sequence of stms, and empty)
 BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
 Statements [5/7] (var, id)
-Expressions [16/19] (subexp, not, id)
+Expressions [16/19] (subexp, id)
 Release temporary/registers (function)
 Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
