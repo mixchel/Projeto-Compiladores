@@ -12,7 +12,7 @@ testAll :: [([Instr], Supply)]
 testAll = map test exps
 
 prettyTest :: [Char] -> [IO ()]
-prettyTest input = map print instr
+prettyTest input = putStrLn input:map print instr
     where (instr,_) = test input
 
 prettyTestAll :: [[IO ()]]
