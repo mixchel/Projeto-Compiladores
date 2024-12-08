@@ -1,7 +1,7 @@
-module Main where
-import Parser (parse, Prog, AbstractSyntaxTree, parseStms)
+module AstGenerator where
+import Parser (parse, Prog, AbstractSyntaxTree, parseStms, Stm)
 import Lexer (alexScanTokens)
-import PrettyPrint
+--import PrettyPrint
 --import CodeGenerator
 import System.Environment (getArgs)
 import GHC.IO.Handle (Newline)
@@ -12,7 +12,7 @@ makeAst = parse . alexScanTokens
 --generateCode :: AbstractSyntaxTree -> []
 --generateCode ast = generate ast
 
-makeStmAst :: String -> Prog
+makeStmAst :: String -> Stm
 makeStmAst xs = parseStms $ alexScanTokens xs
 
 main:: IO()

@@ -13,9 +13,11 @@ data Instr = MOVE Temp Temp
            | PRINT' Temp
            | RETURN' Temp
            | NEG Temp
+    deriving Show
 
 -- ISSUE: Ambiguity between Parsers Exp And/Or labels and Cond BinOP And/Or
 data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
+    deriving Show
 type Prog = [Stm]
 type Temp = String
 type Id = String
