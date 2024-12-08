@@ -85,6 +85,7 @@ transExp (Not e) table dest supply
         (code1, supply2) = transExp e table t1 supply1
         code = code1 ++ [NOT t1]
     in (code, supply2)
+transExp (SubExp e) table dest supply = transExp e table dest supply
 
 -- TODO: Is it necessary to implement the relational OP (==, <, >, <=, >=) in transExp if I already have them here?
 -- TODO: necessary to consider that a condition may be a SUM, a SUB, a DIV, etc...?
@@ -185,7 +186,7 @@ transStm stm table supply = case stm of
 Prog [0/2] (sequence of stms, and empty)
 BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
 Statements [5/7] (var, id)
-Expressions [16/19] (subexp, id)
+Expressions [18/19] (id)
 Release temporary/registers (function)
 Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
