@@ -55,12 +55,12 @@ popTemp' x s = s {registerCount = currCount - x}
 
 transStart :: AbstractSyntaxTree -> ([Instr], State)
 transStart (Main prog) = (LABEL "main":instrs, endState)
-    where (instrs, endState) = transProg prog initialState   
+    where (instrs, endState) = transProg initialState prog  
 
-transProg:: Prog -> State -> ([Instr], State)
-transProg [] s = ([], s)
-transProg (x:xs) s = let (instr1, state1) = transStm' x s
-                         (instr2, state2) = transProg xs state1
+transProg:: State -> Prog -> ([Instr], State)
+transProg s [] = ([], s)
+transProg s (x:xs) = let (instr1, state1) = transStm' x s
+                         (instr2, state2) = transProg state1 xs
                      in (instr1 ++ instr2, state2)
 
                      
@@ -210,7 +210,7 @@ transStm' stm s = case stm of
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [RETURN' t1]
                 in (code, state2)
-  (Block prog) -> transProg prog s --TODO make block code with scoping 
+  (Block prog) -> transProg s prog --TODO make block code with scoping 
 -- TODO remove Expression from Return and find a way to quit progam early (Syscall or End Label)
 
 {-
