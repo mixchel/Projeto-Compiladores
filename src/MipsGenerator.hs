@@ -23,18 +23,6 @@ transInstr (OP op t1 t2 t3) = case op of
   Neq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
   Gt -> ["slt $" ++ t1 ++ ", $" ++ t3 ++ ", $" ++ t2]
   Gteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
-transInstr (OPI op t1 t2 i) = case op of
-  Sum -> ["addi $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i]
-  Sub -> ["sub $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Mult -> ["mul $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Divide -> ["div $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Modulus -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Lt -> ["slt $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Lteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Eq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Neq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
-  Gt -> ["slt $" ++ t1 ++ ", $" ++ show i ++ ", $" ++ t2] -- TODO
-  Gteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
 transInstr (LABEL l) = [l ++ ": "]
 transInstr (JUMP l) = ["j " ++ l]
 transInstr (COND op t1 t2 l1 l2) = case op of
