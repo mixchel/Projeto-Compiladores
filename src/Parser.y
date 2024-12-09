@@ -14,6 +14,7 @@ import Lexer
 %token
 
 int {INT $$}
+bool {BOOL $$}
 id {ID $$}
 '+' {PLUS}
 '-' {MINUS}
@@ -21,6 +22,7 @@ id {ID $$}
 '/' {DIV}
 '%' {MOD}
 '=' {ASSIGN}
+':' {COLON}
 ">=" {GREATEREQ}
 "<=" {LESSEQ}
 "==" {EQUAL}
@@ -42,6 +44,8 @@ return {RETURN}
 print {PRINT}
 readln {READLN}
 fun {FUN}
+tinteger {TINT}
+tboolean {TBOOL}
 
 
 %%
@@ -53,13 +57,16 @@ Prog : Stm Prog {$1:$2}
 Stm : if '(' Exp ')' BlkORStm else BlkORStm {IfElse $3 $5 $7}
     | if '(' Exp ')' BlkORStm {If $3 $5}
     | while '(' Exp ')' BlkORStm {While $3 $5}
-    | var id '=' Exp {Var $2 $4}
+    | var id ':' Type '=' Exp {Var $2 $4 $6}
     | id '=' Exp {Assign $1 $3}
     | return Exp {Return $2}
     | print '(' Exp ')' {Print $3}
 
 BlkORStm : Stm {$1}
          | '{' Prog '}' {Block $2}
+
+Type : tboolean {TBool}
+     | tinteger {TInt}
 
 Exp : '(' Exp ')' {SubExp $2}
     | '-' Exp %prec NEG { Negate $2 }
@@ -79,6 +86,7 @@ Exp : '(' Exp ')' {SubExp $2}
     | '!' Exp {Not $2}
     | readln '(' ')'{Readln}
     | int {Int $1}
+    | bool {Bool $1}
     | id {Identifier $1}
 
 {
@@ -88,10 +96,12 @@ data AbstractSyntaxTree = Main Prog
 
 type Id = String
 type Prog = [Stm]
+data Type = TBool | TInt
+    deriving Show
 
 data Stm = If Exp Stm
             | IfElse Exp Stm Stm
-            | Var Id Exp
+            | Var Id Type Exp
             | Return Exp
             | Print Exp
             | Block Prog
@@ -105,6 +115,7 @@ data Exp = Plus Exp Exp | Minus Exp Exp | Times Exp Exp | Div Exp Exp | Mod Exp 
         | Or Exp Exp | And Exp Exp | Not Exp
         | Equal Exp Exp | Nequal Exp Exp | Greatereq Exp Exp | Lesseq Exp Exp | Greater Exp Exp | Less Exp Exp
         | Int Int
+        | Bool Bool
         | Readln
         | SubExp Exp
         | Negate Exp

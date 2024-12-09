@@ -15,6 +15,11 @@ $white+              ;
 \) {\s -> RPAREN}
 \n*\{ {\s -> LBRACE}
 \n*\} {\s -> RBRACE}
+\: {\s -> COLON}
+
+-- types
+Int {\s -> TINT}
+Boolean {\s ->TBOOL}
 
 -- arithmetic
 \+ {\s -> PLUS}
@@ -36,6 +41,8 @@ $white+              ;
 
 -- values
 [0-9]+ {\s -> INT (read s)}
+true {\s -> BOOL True}
+false {\s -> BOOL False}
 
 -- flow control
 if {\s -> IF}
@@ -58,8 +65,9 @@ unquote s = init (tail s)
 data Token =  PLUS | MINUS | MULT | DIV | MOD
            | LESSEQ | GREATEREQ | LESS | GREATER | EQUAL | NEQUAL
            | AND | OR | NOT
-           | INT Int | ID String
-           | LPAREN | RPAREN | LBRACE | RBRACE | FUN
+           | TINT | TBOOL
+           | INT Int | ID String | BOOL Bool
+           | LPAREN | RPAREN | LBRACE | RBRACE | COLON | FUN 
            | RETURN | PRINT | READLN | VAR | ASSIGN
            | IF | ELSE | WHILE
            deriving (Show)
