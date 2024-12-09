@@ -4,9 +4,8 @@ import CodeGenerator (Instr (..), BinOP (..))
 
 type AssemblyInstr = [String]
 
--- TODO: LOTS of repetition
 -- TODO: add newlines
--- TODO: do ANDC and ORC work right? (due to their bitwise nature)
+-- TODO: do ANDC and ORC work right? (due to their bitwise nature) (perhaps use chaining)
 
 transInstr :: Instr -> AssemblyInstr
 transInstr (MOVE t1 t2) = ["addi $" ++ t1 ++ ", " ++ t2 ++", $zero"]
@@ -16,13 +15,6 @@ transInstr (OP op t1 t2 t3) = case op of
   Sub -> ["sub $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
   Mult -> ["mul $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
   Divide -> ["div $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
-  Modulus -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
-  Lt -> ["slt $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
-  Lteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
-  Eq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
-  Neq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
-  Gt -> ["slt $" ++ t1 ++ ", $" ++ t3 ++ ", $" ++ t2]
-  Gteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
 transInstr (LABEL l) = [l ++ ": "]
 transInstr (JUMP l) = ["j " ++ l]
 transInstr (COND op t1 t2 l1 l2) = case op of
