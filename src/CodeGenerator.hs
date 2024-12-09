@@ -1,6 +1,6 @@
 module CodeGenerator where
 import Data.Text
-import Parser (Exp (..), Stm (..))
+import Parser (Exp (..), Stm (..), AbstractSyntaxTree (..))
 import qualified Data.Map as Map
 
 data Instr = MOVE Temp Temp
@@ -52,6 +52,10 @@ popTemp x (temps, labels) = (temps - x, labels)
 popTemp' :: Int -> State -> State
 popTemp' x s = s {registerCount = currCount - x}
     where currCount = registerCount s
+
+transStart :: AbstractSyntaxTree -> ([Instr], State)
+transStart (Main prog) = (LABEL "main":instrs, endState)
+    where (instrs, endState) = transProg prog initialState   
 
 transProg:: Prog -> State -> ([Instr], State)
 transProg [] s = ([], s)
