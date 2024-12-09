@@ -41,5 +41,5 @@ transInstr (PRINT' t) = ["la $a0, $" ++ t,
 transInstr (RETURN' t) = ["li $v0, 10",
                           "syscall"]
 transInstr (NEG t) = ["subu $" ++ t ++ ", $zero, $" ++ t]
---transInstr (NOT t) = ["sltu $" ++ t ++ ", $zero, $" ++ t,
---                      "xori $" ++ t ++ ", $" ++ t ++ ", 1"]
+transInstr (NOT t) = ["sltu $" ++ t ++ ", $zero, $" ++ t,
+                      "xori $" ++ t ++ ", $" ++ t ++ ", 1"]
