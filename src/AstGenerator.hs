@@ -12,7 +12,7 @@ makeAst = parse . alexScanTokens
 --generateCode :: AbstractSyntaxTree -> []
 --generateCode ast = generate ast
 
-makeStmAst :: String -> Stm
+makeStmAst :: String -> Prog
 makeStmAst xs = parseStms $ alexScanTokens xs
 
 main:: IO()

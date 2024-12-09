@@ -1,7 +1,9 @@
+module TestCodeGen where
 import AstGenerator (makeStmAst, makeAst)
-import CodeGenerator ( Supply, Instr, transStm', initialState, State, transStart)
-import Distribution.Pretty (Pretty(pretty))
-import Language.Haskell.TH.Syntax (sequenceQ)
+import CodeGenerator ( Supply, Instr, transStm', initialState, State, transStart, transProg)
+import Lexer (Token, alexScanTokens)
+import Parser (AbstractSyntaxTree, Prog, parseStms, parse)
+import System.Environment (getArgs)
 
 -- TODO: add tests for while, CONDs with arithmetic, READLN, var assignment, scopes, types, arithmetic with immediate values and w/vars
 stms :: [String]
@@ -18,29 +20,40 @@ stms = ["print(1+2)",
         "if (5<2) {if (5>2) return 4 if (5<3) return 5} else return 3",
         "return 100"]
       
-testProg :: String -> ([Instr], State)
-testProg input = transStart (makeAst input)
 
-test :: String -> ([Instr], State)
-test input = transStm' (makeStmAst input) initialState
+data Result a = Result {tokens :: [Token], kotlinCode :: String, ast :: a, code :: [Instr], state :: State}
+    deriving Show
 
-testAll :: [([Instr], State)]
-testAll = map test stms 
+test :: ([Token] -> a) -> (a -> ([Instr], State)) -> [Char] -> Result a
+test parse trans input = Result {tokens = tokens, ast = ast, code = code, state = state, kotlinCode = input}
+    where tokens = alexScanTokens input
+          ast = parse tokens
+          (code,state) = trans ast 
 
-prettyTest :: [Char] -> [IO ()]
-prettyTest input = print input:newline:print ast:newline:code
-    where ast = makeStmAst input
-          (instr, _) = transStm' ast initialState
-          code = map print instr
-newline = putStrLn ""  
+testStms :: [Char] -> Result Prog
+testStms = test parseStms (transProg initialState)
 
-prettyTestAll :: [[IO ()]]
-prettyTestAll = map prettyTest stms
+testProg :: [Char] -> Result AbstractSyntaxTree
+testProg = test parse transStart             
 
-seqNl :: [IO ()] -> IO ()
-seqNl a = sequence_ (a ++ [putStrLn ""]) 
+printCode:: [Instr] -> [IO()]
+printCode = map print
 
+newline :: IO ()
+newline = putStrLn ""
 
-main :: IO()
-main =
-    mapM_ seqNl prettyTestAll
+printResult :: Show a => Result a -> [IO ()]
+printResult r = start:og:newline:to:newline:tree:newline:st:newline:c
+    where og = putStrLn $ kotlinCode r
+          to = print $ tokens r
+          tree = print $ ast r
+          st = print $ state r
+          c = printCode $ code r
+          start = putStrLn "\nResults:\n"
+          
+
+getResult :: [Char] -> [IO ()]
+getResult = printResult . testStms 
+
+testAll :: IO ()
+testAll = sequence_ $ concatMap getResult stms
