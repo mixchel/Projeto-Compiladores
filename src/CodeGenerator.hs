@@ -6,7 +6,6 @@ import qualified Data.Map as Map
 data Instr = MOVE Temp Temp
            | MOVEI Temp Int
            | OP BinOP Temp Temp Temp
-           | OPI BinOP Temp Temp Int -- TODO: check if this is redundant, if so, remove (as well as the ASM instructions)
            | LABEL Label
            | JUMP Label
            | COND BinOP Temp Temp Label Label
