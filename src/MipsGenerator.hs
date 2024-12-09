@@ -38,8 +38,8 @@ transInstr READLN = ["li $v0, 5",
 transInstr (PRINT' t) = ["la $a0, $" ++ t,
                          "li $v0, 1",
                          "syscall"]
-transInstr (RETURN' t) = ["add $v0, $" ++ t ++ ", $zero",
-                          "jr $ra"]
+transInstr (RETURN' t) = ["li $v0, 10",
+                          "syscall"]
 transInstr (NEG t) = ["subu $" ++ t ++ ", $zero, $" ++ t]
 --transInstr (NOT t) = ["sltu $" ++ t ++ ", $zero, $" ++ t,
 --                      "xori $" ++ t ++ ", $" ++ t ++ ", 1"]
