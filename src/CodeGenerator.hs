@@ -6,7 +6,7 @@ import qualified Data.Map as Map
 data Instr = MOVE Temp Temp
            | MOVEI Temp Int
            | OP BinOP Temp Temp Temp
-           | OPI BinOP Temp Temp Int
+           | OPI BinOP Temp Temp Int -- TODO: check if this is redundant, if so, remove (as well as the ASM instructions)
            | LABEL Label
            | JUMP Label
            | COND BinOP Temp Temp Label Label
@@ -199,7 +199,7 @@ transStm' stm s = case stm of
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [RETURN' t1]
                 in (code, state2) 
-
+-- TODO remove Expression from Return and find a way to quit progam early (Syscall or End Label)
 
 {-
 > Generate intermediary code:
