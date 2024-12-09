@@ -43,8 +43,8 @@ newLabel :: Supply -> (Label, Supply)
 newLabel (temps, labels) = ("l"++show labels, (temps, labels+1))
 
 newLabel' :: State -> (Label, State)
-newLabel' s = ("l" ++ show label, s {labelCount = label+1})
-    where label = registerCount s
+newLabel' s = ("l" ++ show label, s {labelCount = label + 1})
+    where label = labelCount s
 
 popTemp :: Int -> Supply -> Supply
 popTemp x (temps, labels) = (temps - x, labels)
@@ -53,6 +53,13 @@ popTemp' :: Int -> State -> State
 popTemp' x s = s {registerCount = currCount - x}
     where currCount = registerCount s
 
+transProg:: Prog -> State -> ([Instr], State)
+transProg [] s = ([], s)
+transProg (x:xs) s = let (instr1, state1) = transStm' x s
+                         (instr2, state2) = transProg xs state1
+                     in (instr1 ++ instr2, state2)
+
+                     
 -- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
 
 transExp' :: Exp ->  Temp -> State -> ([Instr], State)
@@ -172,7 +179,7 @@ tranStm' EmptyStm s = ([], s)
 transStm' stm s = case stm of
   (If e stm) -> let (l1, state1) = newLabel' s
                     (l2, state2) = newLabel' state1
-                    (code1, state3) = transCond' e l1 l1 state2
+                    (code1, state3) = transCond' e l1 l2 state2
                     (code2 , state4) = transStm' stm state3
                     code = code1 ++ [LABEL l1] ++ code2 ++ [LABEL l2]
                 in (code, state4)
@@ -198,10 +205,16 @@ transStm' stm s = case stm of
   (Return e) -> let (t1, state1) = newTemp' s
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [RETURN' t1]
-                in (code, state2) 
+                in (code, state2)
+  (Block prog) -> transProg prog s --TODO make block code with scoping 
 -- TODO remove Expression from Return and find a way to quit progam early (Syscall or End Label)
 
 {-
+> Parser
+Modificar Parser para apenas aceitar declarações com tipo
+> Semantica
+Verificar tipo de variaveis
+Construção de tabela de Simbolos
 > Generate intermediary code:
 Prog [0/2] (sequence of stms, and empty)
 BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
@@ -211,4 +224,5 @@ Release temporary/registers (function)
 Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
 > Generate assembly
+allocate variable in .data (follow pdf in moodle)
 -}

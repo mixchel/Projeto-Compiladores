@@ -13,8 +13,9 @@ exps = ["print(1+2)",
         "print((5-1)*4)",
         "if (5<6) return 5 else return 2",
         --"if (5+6) return 5 else return 2",
-        --"if (5<2) return 5 else {print(1) print(2)}",
-        "print(2)"]
+        "if (5<2) return 5 else {print(1) print(2)}",
+        "if (5<2) {print(4) return 5} else return 3",
+        "return 100"]
 
 test :: String -> ([Instr], State)
 test input = transStm' (makeStmAst input) initialState
