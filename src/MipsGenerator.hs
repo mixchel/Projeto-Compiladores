@@ -1,22 +1,67 @@
 module MipsGenerator where
 import Data.Text
-import CodeGenerator (Instr (..))
-
--- TODO: define asembly datatype
---data Assembly = 
+import CodeGenerator (Instr (..), BinOP (..))
 
 type AssemblyInstr = [String]
 
+-- TODO: LOTS of repetition
+-- TODO: add newlines
+-- TODO: do ANDC and ORC work right? (due to their bitwise nature)
+
 transInstr :: Instr -> AssemblyInstr
-transInstr (MOVE t1 t2) = ["addi t1, t2, $zero"]
-transInstr (MOVEI t i) = ["addi t, i, $zero"]
---transInstr (OP op t1 t2 t3)
---transInstr (OPI op t1 t2 i)
-transInstr (LABEL l) = ["l ++ : "]
-transInstr (JUMP l) = ["j l"]
---transInstr (COND Temp BinOP Temp Label Label)
-transInstr (READLN) = ["la $a0, target", "li $v0, 5", "syscall"]
-transInstr (PRINT' t) = ["la $a0, target", "li $v0, 1", "syscall"]
-transInstr (RETURN' t) = ["add $v0, t, $zero", "jr $ra"]
-transInstr (NEG t) = ["subu t, $zero, t"]
---transInstr (NOT t) = ["sltu t, $zero, t", "xori t, t, 1"]
+transInstr (MOVE t1 t2) = ["addi $" ++ t1 ++ ", " ++ t2 ++", $zero"]
+transInstr (MOVEI t i) = ["addi $" ++ t ++ ", " ++ show i ++ ", $zero"]
+transInstr (OP op t1 t2 t3) = case op of
+  Sum -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
+  Sub -> ["sub $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
+  Mult -> ["mul $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
+  Divide -> ["div $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
+  Modulus -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
+  Lt -> ["slt $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
+  Lteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
+  Eq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
+  Neq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
+  Gt -> ["slt $" ++ t1 ++ ", $" ++ t3 ++ ", $" ++ t2]
+  Gteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3] -- TODO
+transInstr (OPI op t1 t2 i) = case op of
+  Sum -> ["addi $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i]
+  Sub -> ["sub $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Mult -> ["mul $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Divide -> ["div $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Modulus -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Lt -> ["slt $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Lteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Eq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Neq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+  Gt -> ["slt $" ++ t1 ++ ", $" ++ show i ++ ", $" ++ t2] -- TODO
+  Gteq -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ show i] -- TODO
+transInstr (LABEL l) = [l ++ ": "]
+transInstr (JUMP l) = ["j " ++ l]
+transInstr (COND op t1 t2 l1 l2) = case op of
+  Eq -> ["beq $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
+         "j " ++ l2]
+  Neq -> ["bne $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
+          "j " ++ l2]
+  Gteq -> ["bge $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
+           "j " ++ l2]
+  Lteq -> ["ble $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
+           "j " ++ l2]
+  Gt -> ["bgt $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
+         "j " ++ l2]
+  Lt -> ["blt $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
+         "j " ++ l2]
+  -- ISSUE: not working, somehow
+  -- AndC -> ["beq $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1, --TODO
+  --          "j " ++ l2]
+  -- OrC -> ["beq $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1, --TODO
+  --         "j " ++ l2]
+transInstr READLN = ["li $v0, 5",
+                     "syscall"] --TODO: returnar valor
+transInstr (PRINT' t) = ["la $a0, $" ++ t,
+                         "li $v0, 1",
+                         "syscall"]
+transInstr (RETURN' t) = ["add $v0, $" ++ t ++ ", $zero",
+                          "jr $ra"]
+transInstr (NEG t) = ["subu $" ++ t ++ ", $zero, $" ++ t]
+--transInstr (NOT t) = ["sltu $" ++ t ++ ", $zero, $" ++ t,
+--                      "xori $" ++ t ++ ", $" ++ t ++ ", 1"]
