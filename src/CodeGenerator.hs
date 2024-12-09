@@ -18,12 +18,9 @@ data Instr = MOVE Temp Temp
     deriving Show
 
 -- ISSUE: Ambiguity between Parsers Exp And/Or labels and Cond BinOP And/Or
-data State = State {table:: Map.Map String Int, register :: Int, label :: Int}
+data State = State {table:: Map.Map String Int, registerCount :: Int, labelCount :: Int}
     deriving Show
 
-initialState = State {table = Map.Empty, registerCount = 0, labelCount = 0}
-data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
-    deriving Show
 type Prog = [Stm]
 type Temp = String
 type Id = String
@@ -31,6 +28,9 @@ type Label = String
 type Table = [(String, Int)]
 type Supply = (Int, Int)
 
+initialState = State {table = Map.empty , registerCount = 0, labelCount = 0}
+data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
+    deriving Show
 
 newTemp :: Supply -> (Temp, Supply)
 newTemp (temps, labels) = ("t"++show temps, (temps +1, labels))
@@ -50,12 +50,60 @@ popTemp :: Int -> Supply -> Supply
 popTemp x (temps, labels) = (temps - x, labels)
 
 popTemp' :: Int -> State -> State
-popTemp x s = s {registerCount = currCount - x}
+popTemp' x s = s {registerCount = currCount - x}
     where currCount = registerCount s
 
 -- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
 
-transExp' :: Exp -> Temp -> State -> ([Instr], State)
+transExp' :: Exp ->  Temp -> State -> ([Instr], State)
+transExp' (Int n) dest state = ([MOVEI dest n], state)
+transExp' Readln dest state = ([READLN], state)
+transExp' (Plus e1 e2)  dest state
+  = let (t1, state1) = newTemp' state
+        (t2, state2) = newTemp' state1
+        (code1, state3) = transExp' e1  t1 state2
+        (code2, state4) = transExp' e2  t2 state3
+        code = code1 ++ code2 ++ [OP Sum dest t1 t2]
+    in (code, state4)
+transExp' (Minus e1 e2)  dest state
+  = let (t1, state1) = newTemp' state
+        (t2, state2) = newTemp' state1
+        (code1, state3) = transExp' e1  t1 state2
+        (code2, state4) = transExp' e2  t2 state3
+        code = code1 ++ code2 ++ [OP Sub dest t1 t2]
+    in (code, state4)
+transExp' (Times e1 e2)  dest state
+  = let (t1, state1) = newTemp' state
+        (t2, state2) = newTemp' state1
+        (code1, state3) = transExp' e1  t1 state2
+        (code2, state4) = transExp' e2  t2 state3
+        code = code1 ++ code2 ++ [OP Mult dest t1 t2]
+    in (code, state4)
+transExp' (Div e1 e2)  dest state
+  = let (t1, state1) = newTemp' state
+        (t2, state2) = newTemp' state1
+        (code1, state3) = transExp' e1  t1 state2
+        (code2, state4) = transExp' e2  t2 state3
+        code = code1 ++ code2 ++ [OP Divide dest t1 t2]
+    in (code, state4)
+transExp' (Mod e1 e2)  dest state
+  = let (t1, state1) = newTemp' state
+        (t2, state2) = newTemp' state1
+        (code1, state3) = transExp' e1  t1 state2
+        (code2, state4) = transExp' e2  t2 state3
+        code = code1 ++ code2 ++ [OP Modulus dest t1 t2]
+    in (code, state4)
+transExp' (Negate e)  dest state
+  = let (t1, state1) = newTemp' state
+        (code1, state2) = transExp' e  t1 state1
+        code = code1 ++ [NEG t1]
+    in (code, state2)
+transExp' (Not e)  dest state
+  = let (t1, state1) = newTemp' state
+        (code1, state2) = transExp' e  t1 state1
+        code = code1 ++ [NOT t1]
+    in (code, state2)
+transExp' (SubExp e)  dest state = transExp' e dest state
 
 
 transExp :: Exp -> Table -> Temp -> Supply -> ([Instr], Supply)
