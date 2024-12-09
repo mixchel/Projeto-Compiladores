@@ -64,7 +64,6 @@ transProg (x:xs) s = let (instr1, state1) = transStm' x s
 
                      
 -- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
-
 transExp' :: Exp ->  Temp -> State -> ([Instr], State)
 transExp' (Int n) dest state = ([MOVEI dest n], state)
 transExp' Readln dest state = ([READLN], state)
@@ -115,9 +114,6 @@ transExp' (Not e)  dest state
     in (code, state2)
 transExp' (SubExp e)  dest state = transExp' e dest state
 
-
--- TODO: Is it necessary to implement the relational OP (==, <, >, <=, >=) in transExp'if I already have them here?
--- TODO: necessary to consider that a condition may be a SUM, a SUB, a DIV, etc...?
 transCond':: Exp -> Label -> Label -> State -> ([Instr], State)
 transCond' e l1 l2 s = case e of
     Equal e1 e2 -> let (t1, state1) = newTemp' s
@@ -176,7 +172,6 @@ transCond' e l1 l2 s = case e of
  
 
 -- NOTE: Var Id Exp and Assign Id Exp might require a new new function, since they must return a new table (I believe)
--- TODO: The RETURN instruction, is it necessary? (since we dont have function calling)
 transStm' :: Stm -> State -> ([Instr], State)
 tranStm' EmptyStm s = ([], s)
 transStm' stm s = case stm of
@@ -215,16 +210,17 @@ transStm' stm s = case stm of
 {-
 > Parser
 Modificar Parser para apenas aceitar declarações com tipo
+
 > Semantica
 Verificar tipo de variaveis
 Construção de tabela de Simbolos
+
 > Generate intermediary code:
-Prog [0/2] (sequence of stms, and empty)
-BlkORStm [0/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
+Prog [2/2] (sequence of stms, and empty)
+BlkORStm [2/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
 Statements [5/7] (var, id)
 Expressions [18/19] (id)
 Release temporary/registers (function)
-Implement table for variables (plus scoping, plus relevant information) (necessary?)
 
 > Generate assembly
 allocate variable in .data (follow pdf in moodle)
