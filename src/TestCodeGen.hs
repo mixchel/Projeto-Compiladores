@@ -20,7 +20,7 @@ stms = ["print(1+2)",
         "if (5<2) {print(4) return 5} else return 3",
         "if (5<2) {if (5>2) return 4 if (5<3) return 5} else return 3",
         "return 100"]
-      
+
 
 data Result a = Result {tokens :: [Token], kotlinCode :: String, ast :: a, code :: [Instr], state :: State, assembly :: [String]}
     deriving Show
@@ -30,13 +30,13 @@ test parse trans input = Result {tokens = tokens, ast = ast, code = code, state 
     where tokens = alexScanTokens input
           ast = parse tokens
           (code,state) = trans ast
-          asm = transInstr code 
+          asm = concatMap transInstr code
 
 testStms :: [Char] -> Result Prog
 testStms = test parseStms (transProg initialState)
 
 testProg :: [Char] -> Result AbstractSyntaxTree
-testProg = test parse transStart             
+testProg = test parse transStart
 
 printCode:: [Instr] -> [IO()]
 printCode = map print
@@ -53,10 +53,10 @@ printResult r = start:og:newline:to:newline:tree:newline:st:newline:c ++ newline
           c = printCode $ code r
           start = putStrLn "\nResults:\n"
           asm = map print (assembly r)
-          
+
 
 getResult :: [Char] -> [IO ()]
-getResult = printResult . testStms 
+getResult = printResult . testStms
 
 testAll :: IO ()
 testAll = sequence_ $ concatMap getResult stms
