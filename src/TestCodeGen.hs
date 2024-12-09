@@ -3,6 +3,7 @@ import AstGenerator (makeStmAst, makeAst)
 import CodeGenerator ( Supply, Instr, transStm', initialState, State, transStart, transProg)
 import Lexer (Token, alexScanTokens)
 import Parser (AbstractSyntaxTree, Prog, parseStms, parse)
+import MipsGenerator (transInstr)
 import System.Environment (getArgs)
 
 -- TODO: add tests for while, CONDs with arithmetic, READLN, var assignment, scopes, types, arithmetic with immediate values and w/vars
@@ -21,14 +22,15 @@ stms = ["print(1+2)",
         "return 100"]
       
 
-data Result a = Result {tokens :: [Token], kotlinCode :: String, ast :: a, code :: [Instr], state :: State}
+data Result a = Result {tokens :: [Token], kotlinCode :: String, ast :: a, code :: [Instr], state :: State, assembly :: [String]}
     deriving Show
 
 test :: ([Token] -> a) -> (a -> ([Instr], State)) -> [Char] -> Result a
-test parse trans input = Result {tokens = tokens, ast = ast, code = code, state = state, kotlinCode = input}
+test parse trans input = Result {tokens = tokens, ast = ast, code = code, state = state, kotlinCode = input, assembly = asm}
     where tokens = alexScanTokens input
           ast = parse tokens
-          (code,state) = trans ast 
+          (code,state) = trans ast
+          asm = transInstr code 
 
 testStms :: [Char] -> Result Prog
 testStms = test parseStms (transProg initialState)
@@ -43,13 +45,14 @@ newline :: IO ()
 newline = putStrLn ""
 
 printResult :: Show a => Result a -> [IO ()]
-printResult r = start:og:newline:to:newline:tree:newline:st:newline:c
+printResult r = start:og:newline:to:newline:tree:newline:st:newline:c ++ newline:asm
     where og = putStrLn $ kotlinCode r
           to = print $ tokens r
           tree = print $ ast r
           st = print $ state r
           c = printCode $ code r
           start = putStrLn "\nResults:\n"
+          asm = map print (assembly r)
           
 
 getResult :: [Char] -> [IO ()]
