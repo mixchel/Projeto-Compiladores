@@ -11,5 +11,5 @@ fun main(){
     }else{
         print(4)
     }
-    return 5
+    return
 }

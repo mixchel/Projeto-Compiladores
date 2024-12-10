@@ -1,10 +1,10 @@
 fun main(){
-    x = 0
-    y = 1
-    result = 0
-    n = 20
+    var x : Int = 0
+    var y : Int = 1
+    var result : Int = 0
+    var n : Int = 20
     if(n < 0){
-         print("Invalid number")
+         return
     }
     while(true){
          result = x + y

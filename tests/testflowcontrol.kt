@@ -1,23 +1,23 @@
 fun main(){
     if(true){
-        print("1st condition")
+        print(1)
     }
     if(false){
-        print("wrong condition")
+        print(0)
     } else {
-      print ("2nd condition")
+      print (2)
     }
 
     if(true)
     {
-        print("3rd condition")
+        print(3)
     }
 
-    if(true){print("4th condition")}
+    if(true){print(4)}
 
-    if(false){} else {print("5th condition")}
+    if(false){} else {print(5)}
 
-    x = true
+    var x : Boolean = true
     while(x){x = false}
     while(x){
         x = false

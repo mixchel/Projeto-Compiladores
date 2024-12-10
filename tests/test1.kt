@@ -1,6 +1,6 @@
 fun main(){
-    print("pamonha")
-    var x = 5
+    print(3)
+    var x : Int = 5
     if (x<6)
     {
         x = 7
@@ -29,7 +29,7 @@ fun main(){
         x = 5
     else 
         x = 3
-    y = 9
-    z = 3
-    print("Rest in a gratefull universe")
+    var y : Int = 9
+    var z : Int = 3
+    print(z)
 }

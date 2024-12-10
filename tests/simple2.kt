@@ -1,6 +1,6 @@
 fun main(){
     if(true)
     {
-    x =5
+    Var x : Int =5
     }
 }

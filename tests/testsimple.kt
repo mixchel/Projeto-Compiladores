@@ -1,7 +1,7 @@
 fun main() {
     if (true) {
-        print("cool")
+        print(1)
     } else {
-        print("pirralho")
+        print(0)
     }
 }
