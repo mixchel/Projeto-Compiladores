@@ -13,4 +13,5 @@ main =
         let result = testProg file
         sequence_ (printResult result)
         let asm = unlines (assembly result)
-        writeFile outputPath asm
+        writeFile outputPath $ unlines [".data", "vars: .space 400", "", ".text"]
+        appendFile outputPath asm
