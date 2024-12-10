@@ -40,7 +40,7 @@ transInstr (PRINT' t) = ["la $a0, $" ++ t,
                          "li $v0, 1",
                          "syscall"]
 transInstr RETURN' = ["li $v0, 10",
-                          "syscall"]
+                      "syscall"]
 transInstr (NEG t) = ["subu $" ++ t ++ ", $zero, $" ++ t]
 transInstr (NOT t) = ["sltu $" ++ t ++ ", $zero, $" ++ t,
                       "xori $" ++ t ++ ", $" ++ t ++ ", 1"]
