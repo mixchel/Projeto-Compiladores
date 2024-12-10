@@ -4,8 +4,6 @@ import CodeGenerator (Instr (..), BinOP (..))
 
 type AssemblyInstr = [String]
 
--- TODO: remove hability for return to return values
--- TODO: do ANDC and ORC work right? (due to their bitwise nature) (perhaps use chaining)
 transInstr :: Instr -> AssemblyInstr
 transInstr (MOVE t1 t2) = ["add $" ++ t1 ++ ", " ++ t2 ++", $zero"]
 transInstr (MOVEI t i) = ["li $" ++ t ++ ", " ++ show i]
