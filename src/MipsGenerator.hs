@@ -6,8 +6,8 @@ type AssemblyInstr = [String]
 
 -- TODO: do ANDC and ORC work right? (due to their bitwise nature) (perhaps use chaining)
 transInstr :: Instr -> AssemblyInstr
-transInstr (MOVE t1 t2) = ["addi $" ++ t1 ++ ", " ++ t2 ++", $zero"]
 transInstr (MOVEI t i) = ["addi $" ++ t ++ ", " ++ show i ++ ", $zero"]
+transInstr (MOVE t1 t2) = ["add $" ++ t1 ++ ", " ++ t2 ++", $zero"]
 transInstr (OP op t1 t2 t3) = case op of
   Sum -> ["add $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
   Sub -> ["sub $" ++ t1 ++ ", $" ++ t2 ++ ", $" ++ t3]
