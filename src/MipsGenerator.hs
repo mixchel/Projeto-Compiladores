@@ -4,6 +4,7 @@ import CodeGenerator (Instr (..), BinOP (..))
 
 type AssemblyInstr = [String]
 
+-- TODO: remove hability for return to return values
 -- TODO: do ANDC and ORC work right? (due to their bitwise nature) (perhaps use chaining)
 transInstr :: Instr -> AssemblyInstr
 transInstr (MOVE t1 t2) = ["add $" ++ t1 ++ ", " ++ t2 ++", $zero"]
@@ -33,8 +34,9 @@ transInstr (COND op t1 t2 l1 l2) = case op of
   --          "j " ++ l2]
   -- OrC -> ["beq $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1, --TODO
   --         "j " ++ l2]
+--TODO: returnar valor
 transInstr READLN = ["li $v0, 5",
-                     "syscall"] --TODO: returnar valor
+                     "syscall"]
 transInstr (PRINT' t) = ["la $a0, $" ++ t,
                          "li $v0, 1",
                          "syscall"]
