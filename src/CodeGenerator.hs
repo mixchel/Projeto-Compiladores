@@ -189,6 +189,10 @@ transCond' e l1 l2 s = case e of
                   (code1, state2) = transExp' (Bool e) t1 state1
                   code = code1 ++ [COND AndC t1 t1 l1 l2]
               in (code, popTemp' 1 state2)
+    Identifier e -> let (t1, state1) = newTemp' s
+                        (code1, state2) = transExp' (Identifier e) t1 state1
+                        code = code1 ++ [COND AndC t1 t1 l1 l2]
+                    in (code, popTemp' 1 state2)
     Not e -> let (t1, state1) = newTemp' s
                  (t2, state2) = newTemp' state1
                  (code1, state3) = transExp' e t1 state2 
