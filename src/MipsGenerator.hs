@@ -29,11 +29,13 @@ transInstr (COND op t1 t2 l1 l2) = case op of
          "j " ++ l2]
   Lt -> ["blt $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1,
          "j " ++ l2]
-  -- ISSUE: not working, somehow
-  -- AndC -> ["beq $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1, --TODO
-  --          "j " ++ l2]
-  -- OrC -> ["beq $" ++ t1 ++ ", $" ++ t2 ++ ", " ++ l1, --TODO
-  --         "j " ++ l2]
+  AndC -> ["bne $" ++ t1 ++ ", 1, " ++ l2,
+           "bne $" ++ t2 ++ ", 1, " ++ l2,
+           "j " ++ l1]
+  OrC -> ["beq $" ++ t1 ++ ", 1, " ++ l1,
+          "beq $" ++ t2 ++ ", 1, " ++ l1,
+          "j " ++ l2]
+
 --TODO: returnar valor
 transInstr READLN = ["li $v0, 5",
                      "syscall"]
