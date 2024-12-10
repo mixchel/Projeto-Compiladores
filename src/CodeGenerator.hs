@@ -9,7 +9,7 @@ data Instr = MOVE Temp Temp
            | LABEL Label
            | JUMP Label
            | COND BinOP Temp Temp Label Label
-           | READLN
+           | READLN Temp
            | PRINT' Temp
            | RETURN'
            | NEG Temp
@@ -82,7 +82,7 @@ transProg s (x:xs) = let (instr1, state1) = transStm' x s
 -- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
 transExp' :: Exp ->  Temp -> State -> ([Instr], State)
 transExp' (Int n) dest state = ([MOVEI dest n], state)
-transExp' Readln dest state = ([READLN], state)
+transExp' Readln dest state = ([READLN dest], state)
 transExp' (Plus e1 e2)  dest state
   = let (t1, state1) = newTemp' state
         (t2, state2) = newTemp' state1
