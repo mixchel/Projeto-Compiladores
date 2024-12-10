@@ -3,7 +3,7 @@ fun main(){
         print(2)
     }
     while (4>3){
-        return 3
+        return
     }
     print(4)
     if (5>3){

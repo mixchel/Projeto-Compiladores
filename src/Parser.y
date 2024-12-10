@@ -59,7 +59,7 @@ Stm : if '(' Exp ')' BlkORStm else BlkORStm {IfElse $3 $5 $7}
     | while '(' Exp ')' BlkORStm {While $3 $5}
     | var id ':' Type '=' Exp {Var $2 $4 $6}
     | id '=' Exp {Assign $1 $3}
-    | return Exp {Return $2}
+    | return {Return}
     | print '(' Exp ')' {Print $3}
 
 BlkORStm : Stm {$1}
@@ -102,7 +102,7 @@ data Type = TBool | TInt
 data Stm = If Exp Stm
             | IfElse Exp Stm Stm
             | Var Id Type Exp
-            | Return Exp
+            | Return
             | Print Exp
             | Block Prog
             | While Exp Stm

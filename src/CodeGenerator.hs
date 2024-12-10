@@ -11,7 +11,7 @@ data Instr = MOVE Temp Temp
            | COND BinOP Temp Temp Label Label
            | READLN
            | PRINT' Temp
-           | RETURN' Temp
+           | RETURN'
            | NEG Temp
            | NOT Temp
     deriving Show
@@ -27,6 +27,7 @@ type Label = String
 type Table = [(String, Int)]
 type Supply = (Int, Int)
 
+initialState :: State
 initialState = State {table = Map.empty , registerCount = 0, labelCount = 0}
 data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
     deriving Show
@@ -200,16 +201,13 @@ transStm' stm s = case stm of
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [PRINT' t1]
                 in (code, popTemp' 1 state2)
-  (Return e) -> let (t1, state1) = newTemp' s
-                    (code1, state2) = transExp' e t1 state1
-                    code = code1 ++ [RETURN' t1]
-                in (code, state2)
+  Return -> ([RETURN'], s)
   (Block prog) -> transProg s prog --TODO make block code with scoping 
 -- TODO remove Expression from Return and find a way to quit progam early (Syscall or End Label)
 
 {-
 > Parser
-Modificar Parser para apenas aceitar declarações com tipo
+Modificar Parser para apenas aceitar declarações com tipo DONE
 
 > Semantica
 Verificar tipo de variaveis
