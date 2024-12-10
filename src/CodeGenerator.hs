@@ -73,45 +73,45 @@ transExp' (Plus e1 e2)  dest state
         (code1, state3) = transExp' e1  t1 state2
         (code2, state4) = transExp' e2  t2 state3
         code = code1 ++ code2 ++ [OP Sum dest t1 t2]
-    in (code, state4)
+    in (code, popTemp' 2 state4)
 transExp' (Minus e1 e2)  dest state
   = let (t1, state1) = newTemp' state
         (t2, state2) = newTemp' state1
         (code1, state3) = transExp' e1  t1 state2
         (code2, state4) = transExp' e2  t2 state3
         code = code1 ++ code2 ++ [OP Sub dest t1 t2]
-    in (code, state4)
+    in (code, popTemp' 2 state4)
 transExp' (Times e1 e2)  dest state
   = let (t1, state1) = newTemp' state
         (t2, state2) = newTemp' state1
         (code1, state3) = transExp' e1  t1 state2
         (code2, state4) = transExp' e2  t2 state3
         code = code1 ++ code2 ++ [OP Mult dest t1 t2]
-    in (code, state4)
+    in (code, popTemp' 2 state4)
 transExp' (Div e1 e2)  dest state
   = let (t1, state1) = newTemp' state
         (t2, state2) = newTemp' state1
         (code1, state3) = transExp' e1  t1 state2
         (code2, state4) = transExp' e2  t2 state3
         code = code1 ++ code2 ++ [OP Divide dest t1 t2]
-    in (code, state4)
+    in (code, popTemp' 2 state4)
 transExp' (Mod e1 e2)  dest state
   = let (t1, state1) = newTemp' state
         (t2, state2) = newTemp' state1
         (code1, state3) = transExp' e1  t1 state2
         (code2, state4) = transExp' e2  t2 state3
         code = code1 ++ code2 ++ [OP Modulus dest t1 t2]
-    in (code, state4)
+    in (code, popTemp' 2 state4)
 transExp' (Negate e)  dest state
   = let (t1, state1) = newTemp' state
         (code1, state2) = transExp' e  t1 state1
         code = code1 ++ [NEG t1]
-    in (code, state2)
+    in (code, popTemp' 1 state2)       
 transExp' (Not e)  dest state
   = let (t1, state1) = newTemp' state
         (code1, state2) = transExp' e  t1 state1
         code = code1 ++ [NOT t1]
-    in (code, state2)
+    in (code, popTemp' 1 state2)
 transExp' (SubExp e)  dest state = transExp' e dest state
 
 transCond':: Exp -> Label -> Label -> State -> ([Instr], State)
@@ -121,54 +121,54 @@ transCond' e l1 l2 s = case e of
                        (code1, state3) = transExp' e1 t1 state2 
                        (code2, state4) = transExp' e2 t2 state3
                        code = code1 ++ code2 ++ [COND Eq t1 t2 l1 l2]
-                    in (code, state4)
+                   in (code, popTemp' 2 state4)
     Nequal e1 e2 -> let (t1, state1) = newTemp' s
                         (t2, state2) = newTemp' state1
                         (code1, state3) = transExp' e1 t1 state2 
                         (code2, state4) = transExp' e2 t2 state3
                         code = code1 ++ code2 ++ [COND Neq t1 t2 l1 l2]
-                    in (code, state4)
+                    in (code, popTemp' 2 state4)
     Greatereq e1 e2 -> let (t1, state1) = newTemp' s
                            (t2, state2) = newTemp' state1
                            (code1, state3) = transExp' e1 t1 state2 
                            (code2, state4) = transExp' e2 t2 state3
                            code = code1 ++ code2 ++ [COND Gteq t1 t2 l1 l2]
-                        in (code, state4)
+                       in (code, popTemp' 2 state4)
     Lesseq e1 e2 -> let (t1, state1) = newTemp' s
                         (t2, state2) = newTemp' state1
                         (code1, state3) = transExp' e1 t1 state2 
                         (code2, state4) = transExp' e2 t2 state3
                         code = code1 ++ code2 ++ [COND Lteq t1 t2 l1 l2]
-                    in (code, state4)
+                    in (code, popTemp' 2 state4)
     Greater e1 e2 -> let (t1, state1) = newTemp' s
                          (t2, state2) = newTemp' state1
                          (code1, state3) = transExp' e1 t1 state2 
                          (code2, state4) = transExp' e2 t2 state3
                          code = code1 ++ code2 ++ [COND Gt t1 t2 l1 l2]
-                     in (code, state4)
+                     in (code, popTemp' 2 state4)
     Less e1 e2 -> let (t1, state1) = newTemp' s
                       (t2, state2) = newTemp' state1
                       (code1, state3) = transExp' e1 t1 state2 
                       (code2, state4) = transExp' e2 t2 state3
                       code = code1 ++ code2 ++ [COND Lt t1 t2 l1 l2]
-                  in (code, state4)
+                  in (code, popTemp' 2 state4)
     And e1 e2 -> let (t1, state1) = newTemp' s
                      (t2, state2) = newTemp' state1
                      (code1, state3) = transExp' e1 t1 state2 
                      (code2, state4) = transExp' e2 t2 state3
                      code = code1 ++ code2 ++ [COND AndC t1 t2 l1 l2]
-                 in (code, state4)
+                 in (code, popTemp' 2 state4)
     Or e1 e2 -> let (t1, state1) = newTemp' s
                     (t2, state2) = newTemp' state1
                     (code1, state3) = transExp' e1 t1 state2 
                     (code2, state4) = transExp' e2 t2 state3
                     code = code1 ++ code2 ++ [COND OrC t1 t2 l1 l2]
-                in (code, state4)
+                in (code, popTemp' 2 state4)
     Not e -> let (t1, state1) = newTemp' s
                  (t2, state2) = newTemp' state1
                  (code1, state3) = transExp' e t1 state2 
                  code = code1 ++ [COND AndC t1 t1 l1 l2]
-             in (code, state3)
+             in (code, popTemp' 1 state3)
  
 
 -- NOTE: Var Id Exp and Assign Id Exp might require a new new function, since they must return a new table (I believe)
@@ -199,7 +199,7 @@ transStm' stm s = case stm of
   (Print e)  -> let (t1, state1) = newTemp' s
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [PRINT' t1]
-                in (code, state2)
+                in (code, popTemp' 1 state2)
   (Return e) -> let (t1, state1) = newTemp' s
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [RETURN' t1]
