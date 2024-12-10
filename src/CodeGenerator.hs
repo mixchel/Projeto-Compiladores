@@ -222,8 +222,8 @@ transStm' stm s = case stm of
                        (l3, state3) = newLabel' state2
                        (code1, state4) = transCond' e l2 l3 state3
                        (code2, state5) = transStm' stm state4
-                       code = [LABEL l1] ++ code1 ++ [LABEL l2] ++ code2 ++ [LABEL l1] ++ [LABEL l3]
-                    in (code, state5)
+                       code = [LABEL l1] ++ code1 ++ [LABEL l2] ++ code2 ++ [JUMP l1] ++ [LABEL l3]
+                   in (code, state5)
   (Print e)  -> let (t1, state1) = newTemp' s
                     (code1, state2) = transExp' e t1 state1
                     code = code1 ++ [PRINT' t1]
