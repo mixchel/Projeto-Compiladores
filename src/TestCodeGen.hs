@@ -1,10 +1,12 @@
 module TestCodeGen where
 import AstGenerator (makeStmAst, makeAst)
-import CodeGenerator ( Supply, Instr, transStm', initialState, State, transStart, transProg)
+import CodeGenerator ( Supply, Instr, transStm', initialState, State, transStart, transProg, transCond')
 import Lexer (Token, alexScanTokens)
 import Parser (AbstractSyntaxTree, Prog, parseStms, parse)
 import MipsGenerator (transInstr)
+import SemanticAnalysis (typeCheckCode, getVarOpsCode, VarOp)
 import System.Environment (getArgs)
+
 
 -- TODO: add tests for while, CONDs with arithmetic, READLN, var assignment, scopes, types, arithmetic with immediate values and w/vars
 stms :: [String]
@@ -20,21 +22,17 @@ stms = ["print(1+2)",
         "return 100"]
 
 
-data Result a = Result {tokens :: [Token], kotlinCode :: String, ast :: a, code :: [Instr], state :: State, assembly :: [String]}
+data Result = Result {tokens :: [Token], kotlinCode :: String, ast :: AbstractSyntaxTree, code :: [Instr], state :: State, assembly :: [String], types :: [VarOp], correct ::Bool}
     deriving Show
 
-test :: ([Token] -> a) -> (a -> ([Instr], State)) -> [Char] -> Result a
-test parse trans input = Result {tokens = tokens, ast = ast, code = code, state = state, kotlinCode = input, assembly = asm}
+testProg :: [Char] -> Result
+testProg input = Result {tokens = tokens, ast = ast, code = code, state = state, kotlinCode = input, assembly = asm, types = varOps, correct = correct'}
     where tokens = alexScanTokens input
           ast = parse tokens
-          (code,state) = trans ast
+          varOps = getVarOpsCode ast
+          correct' = typeCheckCode varOps
+          (code,state) = transStart ast
           asm = concatMap transInstr code
-
-testStms :: [Char] -> Result Prog
-testStms = test parseStms (transProg initialState)
-
-testProg :: [Char] -> Result AbstractSyntaxTree
-testProg = test parse transStart
 
 printCode:: [Instr] -> [IO()]
 printCode = map print
@@ -42,19 +40,17 @@ printCode = map print
 newline :: IO ()
 newline = putStrLn ""
 
-printResult :: Show a => Result a -> [IO ()]
-printResult r = start:og:newline:to:newline:tree:newline:st:newline:c ++ newline:asm
+printResult :: Result -> [IO ()]
+printResult r = start:og:newline:to:newline:tree:newline:typeList ++ correct':newline:st:newline:c ++ newline:asm
     where og = putStrLn $ kotlinCode r
           to = print $ tokens r
           tree = print $ ast r
+          typeList = map print (types r)
+          correct' = print (correct r)
           st = print $ state r
           c = printCode $ code r
           start = putStrLn "\nResults:\n"
           asm = map putStrLn (assembly r)
 
 
-getResult :: [Char] -> [IO ()]
-getResult = printResult . testStms
 
-testAll :: IO ()
-testAll = sequence_ $ concatMap getResult stms
