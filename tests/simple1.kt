@@ -1,8 +1,14 @@
 fun main(){
+    var a:Int = 4 
     if (5 > 2){
-        print(2)
+        var x:Int = 2
+        x = 3
+        print(a)
     }
-    while (4>3){
+    var y:Int = 3
+    var x:Int = 2
+    while (x>3){
+        x = 4
         return
     }
     print(4)

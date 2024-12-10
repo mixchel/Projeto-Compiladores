@@ -50,7 +50,7 @@ printResult r = start:og:newline:to:newline:tree:newline:st:newline:c ++ newline
           st = print $ state r
           c = printCode $ code r
           start = putStrLn "\nResults:\n"
-          asm = map print (assembly r)
+          asm = map putStrLn (assembly r)
 
 
 getResult :: [Char] -> [IO ()]

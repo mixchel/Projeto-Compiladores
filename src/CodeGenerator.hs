@@ -14,10 +14,12 @@ data Instr = MOVE Temp Temp
            | RETURN'
            | NEG Temp
            | NOT Temp
+           | STORE Temp Int
+           | LOAD Temp Int
     deriving Show
-
+-- TODO find a way to change show Pos to become M[Pos]
 -- ISSUE: Ambiguity between Parsers Exp And/Or labels and Cond BinOP And/Or
-data State = State {table:: Map.Map String Int, registerCount :: Int, labelCount :: Int}
+data State = State {table:: Map.Map String Int, registerCount :: Int, labelCount :: Int, varCount :: Int}
     deriving Show
 
 type Prog = [Stm]
@@ -28,7 +30,7 @@ type Table = [(String, Int)]
 type Supply = (Int, Int)
 
 initialState :: State
-initialState = State {table = Map.empty , registerCount = 0, labelCount = 0}
+initialState = State {table = Map.empty , registerCount = 0, labelCount = 0, varCount = 0}
 data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
     deriving Show
 
@@ -46,12 +48,25 @@ newLabel' :: State -> (Label, State)
 newLabel' s = ("l" ++ show label, s {labelCount = label + 1})
     where label = labelCount s
 
+newVariable :: Id -> State -> (Int, State)
+newVariable id state = (var, state {varCount = var + 1, table = Map.insert id var map})
+    where var = varCount state
+          reg = "s" ++ show var  
+          map = table state
+
 popTemp :: Int -> Supply -> Supply
 popTemp x (temps, labels) = (temps - x, labels)
 
 popTemp' :: Int -> State -> State
 popTemp' x s = s {registerCount = currCount - x}
     where currCount = registerCount s
+
+getPos:: Id -> State -> Int
+getPos id state =
+    case Map.lookup id map of
+        Just pos -> pos 
+        Nothing -> error $ "Variable " ++ id ++ " wasn't declared before use"   
+    where map = table state
 
 transStart :: AbstractSyntaxTree -> ([Instr], State)
 transStart (Main prog) = (LABEL "main":instrs, endState)
@@ -114,7 +129,9 @@ transExp' (Not e)  dest state
         code = code1 ++ [NOT t1]
     in (code, popTemp' 1 state2)
 transExp' (SubExp e)  dest state = transExp' e dest state
-
+transExp' (Identifier id) dest state = let map = table state
+                                           pos = getPos id state
+                                        in ([LOAD dest pos], state) 
 transCond':: Exp -> Label -> Label -> State -> ([Instr], State)
 transCond' e l1 l2 s = case e of
     Equal e1 e2 -> let (t1, state1) = newTemp' s
@@ -202,9 +219,18 @@ transStm' stm s = case stm of
                     code = code1 ++ [PRINT' t1]
                 in (code, popTemp' 1 state2)
   Return -> ([RETURN'], s)
-  (Block prog) -> transProg s prog --TODO make block code with scoping 
--- TODO remove Expression from Return and find a way to quit progam early (Syscall or End Label)
-
+  (Block prog) -> let (code1, scopeState) = transProg s prog
+                  in  (code1, s{labelCount = labelCount scopeState}) -- Only State that gets preserved from Scope is Labels  
+  (Var id t e) -> let (t1, state1) = newTemp' s
+                      (code1, state2) = transExp' e t1 state1
+                      (pos, state3) = newVariable id state2
+                      code = code1 ++ [STORE t1 pos]
+                  in (code, popTemp' 1 state3)
+  (Assign id e) ->  let (t1, state1) = newTemp' s
+                        (code1, state2) = transExp' e t1 state1
+                        pos = getPos id state2
+                    in (code1 ++ [STORE t1 pos], popTemp' 1 state2)        
+                    
 {-
 > Parser
 Modificar Parser para apenas aceitar declarações com tipo DONE
