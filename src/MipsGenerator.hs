@@ -35,10 +35,9 @@ transInstr (COND op t1 t2 l1 l2) = case op of
   OrC -> ["beq $" ++ t1 ++ ", 1, " ++ l1,
           "beq $" ++ t2 ++ ", 1, " ++ l1,
           "j " ++ l2]
-
---TODO: returnar valor
-transInstr READLN = ["li $v0, 5",
-                     "syscall"]
+transInstr (READLN t) = ["li $v0, 5",
+                         "syscall",
+                         "move $" ++ t ++ ", $v0"]
 transInstr (PRINT' t) = ["la $a0, $" ++ t,
                          "li $v0, 1",
                          "syscall"]
