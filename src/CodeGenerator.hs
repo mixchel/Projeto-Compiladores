@@ -14,6 +14,7 @@ data Instr = MOVE Temp Temp
            | RETURN'
            | NEG Temp
            | NOT Temp
+           | ARRAY
            | STORE Temp Int
            | LOAD Temp Int
     deriving Show
@@ -69,7 +70,7 @@ getPos id state =
     where map = table state
 
 transStart :: AbstractSyntaxTree -> ([Instr], State)
-transStart (Main prog) = (LABEL "main":instrs, endState)
+transStart (Main prog) = ([LABEL "main"] ++ [ARRAY] ++ instrs, endState)
     where (instrs, endState) = transProg initialState prog  
 
 transProg:: State -> Prog -> ([Instr], State)
