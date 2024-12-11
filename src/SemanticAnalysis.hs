@@ -29,7 +29,7 @@ typeCheck  :: TypeTable -> [VarOp] -> (Bool, TypeTable)
 typeCheck table [] = (True, table)
 typeCheck table (x:xs) = (correct1 && correct2, table2)
     where (correct1,table1) = typeCheckStm x table
-          (correct2, table2) = typeCheck table xs
+          (correct2, table2) = typeCheck table1 xs
 
 typeCheckStm :: VarOp -> TypeTable -> (Bool, TypeTable)
 typeCheckStm (Declaration id type' expType) table = (typeCheckExp table type' expType, table1)
