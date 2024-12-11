@@ -36,7 +36,7 @@ transInstr (COND op t1 t2 l1 l2) = case op of
 transInstr (READLN t) = ["li $v0, 5",
                          "syscall",
                          "move $" ++ t ++ ", $v0"]
-transInstr (PRINT' t) = ["la $a0, $" ++ t,
+transInstr (PRINT' t) = ["move $a0, $" ++ t,
                          "li $v0, 1",
                          "syscall"]
 transInstr RETURN' = ["li $v0, 10",
