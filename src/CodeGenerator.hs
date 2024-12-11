@@ -83,7 +83,7 @@ transProg s (x:xs) = let (instr1, state1) = transStm' x s
 -- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
 transExp' :: Exp ->  Temp -> State -> ([Instr], State)
 transExp' (Int n) dest state = ([MOVEI dest n], state)
-transExp' (Bool n) dest state = if show n == "true" then ([MOVEI dest 1], state)
+transExp' (Bool n) dest state = if show n == "True" then ([MOVEI dest 1], state)
                                 else ([MOVEI dest 0], state)
 transExp' Readln dest state = ([READLN dest], state)
 transExp' (Plus e1 e2)  dest state
