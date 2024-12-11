@@ -41,9 +41,8 @@ transInstr (PRINT' t) = ["move $a0, $" ++ t,
                          "syscall"]
 transInstr RETURN' = ["li $v0, 10",
                       "syscall"]
-transInstr (NEG t) = ["subu $" ++ t ++ ", $zero, $" ++ t]
-transInstr (NOT t) = ["sltu $" ++ t ++ ", $zero, $" ++ t,
-                      "xori $" ++ t ++ ", $" ++ t ++ ", 1"]
+transInstr (NEG t1 t2) = ["subu $" ++ t1 ++ ", $zero, $" ++ t2]
+transInstr (NOT t1 t2) = ["nor $" ++ t1 ++ ", $" ++ t2 ++ ", $zero"]
 transInstr (STORE t i) = ["sw $" ++ t ++ ", " ++ show (i * 4) ++ "($s0)"]
 transInstr (LOAD t i) = ["lw $" ++ t ++ ", " ++ show (i * 4) ++ "($s0)"]
 transInstr ARRAY = ["la $s0, vars"]

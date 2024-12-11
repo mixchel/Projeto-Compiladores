@@ -12,8 +12,8 @@ data Instr = MOVE Temp Temp
            | READLN Temp
            | PRINT' Temp
            | RETURN'
-           | NEG Temp
-           | NOT Temp
+           | NEG Temp Temp
+           | NOT Temp Temp
            | ARRAY
            | STORE Temp Int
            | LOAD Temp Int
@@ -124,12 +124,12 @@ transExp' (Mod e1 e2)  dest state
 transExp' (Negate e)  dest state
   = let (t1, state1) = newTemp' state
         (code1, state2) = transExp' e  t1 state1
-        code = code1 ++ [NEG t1]
+        code = code1 ++ [NEG dest t1]
     in (code, popTemp' 1 state2)       
 transExp' (Not e)  dest state
   = let (t1, state1) = newTemp' state
         (code1, state2) = transExp' e  t1 state1
-        code = code1 ++ [NOT t1]
+        code = code1 ++ [NOT dest t1]
     in (code, popTemp' 1 state2)
 transExp' (SubExp e)  dest state = transExp' e dest state
 transExp' (Identifier id) dest state = let map = table state
