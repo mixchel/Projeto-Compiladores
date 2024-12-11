@@ -29,16 +29,13 @@ newline :: IO ()
 newline = putStrLn ""
 
 printResult :: Result -> [IO ()]
-printResult r = start:og:newline:to:newline:tree:newline:typeList ++ correct':newline:st:newline:c ++ newline:asm
-    where og = putStrLn $ kotlinCode r
-          to = print $ tokens r
-          tree = print $ ast r
-          typeList = map print (types r)
-          correct' = print (correct r)
-          st = print $ state r
-          c = printCode $ code r
-          start = putStrLn "\nResults:\n"
-          asm = map putStrLn (assembly r)
-
-
-
+printResult r = let
+    og = [putStrLn $ kotlinCode r]
+    to = putStrLn "\n------Tokens: ":[print $ tokens r]
+    tree = putStrLn "\n------Ast:": [print $ ast r]
+    typeList = putStrLn "\n------Type Checking:" : map print (types r)
+    correct' = putStr "Are Types Correct: ": [print $ correct r]
+    st = putStrLn "\n------Final State: " : [print $ state r]
+    c = putStrLn "\n------intermediary Code:":printCode (code r)
+    asm = putStrLn "Assembly code:": map putStrLn (assembly r)
+    in og ++ to ++ tree ++ typeList ++ correct' ++ st ++ c ++ asm
