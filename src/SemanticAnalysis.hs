@@ -5,7 +5,6 @@ import Parser
       Prog,
       Stm(..))
 import qualified Parser
-import AstGenerator (makeStmAst)
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 
