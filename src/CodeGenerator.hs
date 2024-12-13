@@ -1,6 +1,6 @@
 module CodeGenerator where
 import Data.Text
-import Parser (Exp (..), Stm (..), AbstractSyntaxTree (..))
+import Parser (Exp (..), Stm (..), AbstractSyntaxTree (..), Id, Prog)
 import qualified Data.Map as Map
 
 data Instr = MOVE Temp Temp
@@ -18,244 +18,157 @@ data Instr = MOVE Temp Temp
            | STORE Temp Int
            | LOAD Temp Int
     deriving Show
+
 -- TODO find a way to change show Pos to become M[Pos]
--- ISSUE: Ambiguity between Parsers Exp And/Or labels and Cond BinOP And/Or
 data State = State {table:: Map.Map String Int, registerCount :: Int, labelCount :: Int, varCount :: Int}
     deriving Show
 
-type Prog = [Stm]
 type Temp = String
-type Id = String
 type Label = String
 type Table = [(String, Int)]
 type Supply = (Int, Int)
 
 initialState :: State
 initialState = State {table = Map.empty , registerCount = 0, labelCount = 0, varCount = 0}
+
 data BinOP = Sum | Sub | Mult | Divide | Modulus | Lt | Lteq | Eq | Neq | Gt | Gteq | AndC | OrC
     deriving Show
 
-newTemp :: Supply -> (Temp, Supply)
-newTemp (temps, labels) = ("t"++show temps, (temps +1, labels))
-
-newTemp' :: State -> (Temp, State)
-newTemp' s = ("t" ++ show temp, s {registerCount = temp +1})
+newTemp :: State -> (Temp, State)
+newTemp s = ("t" ++ show temp, s {registerCount = temp +1})
     where temp = registerCount s
 
-newLabel :: Supply -> (Label, Supply)
-newLabel (temps, labels) = ("l"++show labels, (temps, labels+1))
-
-newLabel' :: State -> (Label, State)
-newLabel' s = ("l" ++ show label, s {labelCount = label + 1})
+newLabel :: State -> (Label, State)
+newLabel s = ("l" ++ show label, s {labelCount = label + 1})
     where label = labelCount s
 
 newVariable :: Id -> State -> (Int, State)
-newVariable id state = (var, state {varCount = var + 1, table = Map.insert id var map})
-    where var = varCount state
-          reg = "s" ++ show var  
-          map = table state
+newVariable id s = (var, s {varCount = var + 1, table = Map.insert id var map})
+    where var = varCount s
+          reg = "s" ++ show var
+          map = table s
 
-popTemp :: Int -> Supply -> Supply
-popTemp x (temps, labels) = (temps - x, labels)
-
-popTemp' :: Int -> State -> State
-popTemp' x s = s {registerCount = currCount - x}
+popTemp :: Int -> State -> State
+popTemp x s = s {registerCount = currCount - x}
     where currCount = registerCount s
 
 getPos:: Id -> State -> Int
-getPos id state =
+getPos id s =
     case Map.lookup id map of
-        Just pos -> pos 
-        Nothing -> error $ "Variable " ++ id ++ " wasn't declared before use"   
-    where map = table state
+        Just pos -> pos
+        Nothing -> error $ "Undefined variable " ++ id
+    where map = table s
 
 transStart :: AbstractSyntaxTree -> ([Instr], State)
 transStart (Main prog) = ([LABEL "main"] ++ [ARRAY] ++ instrs, endState)
-    where (instrs, endState) = transProg initialState prog  
+    where (instrs, endState) = transProg prog initialState
 
-transProg:: State -> Prog -> ([Instr], State)
-transProg s [] = ([], s)
-transProg s (x:xs) = let (instr1, state1) = transStm' x s
-                         (instr2, state2) = transProg state1 xs
-                     in (instr1 ++ instr2, state2)
+transProg:: Prog -> State -> ([Instr], State)
+transProg [] s = ([], s)
+transProg (x:xs) s = let (instr1, s1) = transStm x s
+                         (instr2, s2) = transProg xs s1
+                     in (instr1 ++ instr2, s2)
 
-                     
--- TODO: check if there's a better way than to copy paste this stuff for every arithmetic expressions
-transExp' :: Exp ->  Temp -> State -> ([Instr], State)
-transExp' (Int n) dest state = ([MOVEI dest n], state)
-transExp' (Bool n) dest state = if show n == "True" then ([MOVEI dest 1], state)
-                                else ([MOVEI dest 0], state)
-transExp' Readln dest state = ([READLN dest], state)
-transExp' (Plus e1 e2)  dest state
-  = let (t1, state1) = newTemp' state
-        (t2, state2) = newTemp' state1
-        (code1, state3) = transExp' e1  t1 state2
-        (code2, state4) = transExp' e2  t2 state3
-        code = code1 ++ code2 ++ [OP Sum dest t1 t2]
-    in (code, popTemp' 2 state4)
-transExp' (Minus e1 e2)  dest state
-  = let (t1, state1) = newTemp' state
-        (t2, state2) = newTemp' state1
-        (code1, state3) = transExp' e1  t1 state2
-        (code2, state4) = transExp' e2  t2 state3
-        code = code1 ++ code2 ++ [OP Sub dest t1 t2]
-    in (code, popTemp' 2 state4)
-transExp' (Times e1 e2)  dest state
-  = let (t1, state1) = newTemp' state
-        (t2, state2) = newTemp' state1
-        (code1, state3) = transExp' e1  t1 state2
-        (code2, state4) = transExp' e2  t2 state3
-        code = code1 ++ code2 ++ [OP Mult dest t1 t2]
-    in (code, popTemp' 2 state4)
-transExp' (Div e1 e2)  dest state
-  = let (t1, state1) = newTemp' state
-        (t2, state2) = newTemp' state1
-        (code1, state3) = transExp' e1  t1 state2
-        (code2, state4) = transExp' e2  t2 state3
-        code = code1 ++ code2 ++ [OP Divide dest t1 t2]
-    in (code, popTemp' 2 state4)
-transExp' (Mod e1 e2)  dest state
-  = let (t1, state1) = newTemp' state
-        (t2, state2) = newTemp' state1
-        (code1, state3) = transExp' e1  t1 state2
-        (code2, state4) = transExp' e2  t2 state3
-        code = code1 ++ code2 ++ [OP Modulus dest t1 t2]
-    in (code, popTemp' 2 state4)
-transExp' (Negate e)  dest state
-  = let (t1, state1) = newTemp' state
-        (code1, state2) = transExp' e  t1 state1
+transBinExpAux :: BinOP -> Exp -> Exp -> Temp -> State -> ([Instr], State)
+transBinExpAux op e1 e2 dest s
+  = let (t1, s1) = newTemp s
+        (t2, s2) = newTemp s1
+        (code1, s3) = transExp e1 t1 s2
+        (code2, s4) = transExp e2 t2 s3
+        code = code1 ++ code2 ++ [OP op dest t1 t2]
+    in (code, popTemp 2 s4)
+
+transExp :: Exp -> Temp -> State -> ([Instr], State)
+transExp (Negate e) dest s
+  = let (t1, s1) = newTemp s
+        (code1, s2) = transExp e t1 s1
         code = code1 ++ [NEG dest t1]
-    in (code, popTemp' 1 state2)       
-transExp' (Not e)  dest state
-  = let (t1, state1) = newTemp' state
-        (code1, state2) = transExp' e  t1 state1
+    in (code, popTemp 1 s2)
+transExp (Not e) dest s
+  = let (t1, s1) = newTemp s
+        (code1, s2) = transExp e t1 s1
         code = code1 ++ [NOT dest t1]
-    in (code, popTemp' 1 state2)
-transExp' (SubExp e)  dest state = transExp' e dest state
-transExp' (Identifier id) dest state = let map = table state
-                                           pos = getPos id state
-                                        in ([LOAD dest pos], state) 
-transCond':: Exp -> Label -> Label -> State -> ([Instr], State)
-transCond' e l1 l2 s = case e of
-    Equal e1 e2 -> let (t1, state1) = newTemp' s
-                       (t2, state2) = newTemp' state1
-                       (code1, state3) = transExp' e1 t1 state2 
-                       (code2, state4) = transExp' e2 t2 state3
-                       code = code1 ++ code2 ++ [COND Eq t1 t2 l1 l2]
-                   in (code, popTemp' 2 state4)
-    Nequal e1 e2 -> let (t1, state1) = newTemp' s
-                        (t2, state2) = newTemp' state1
-                        (code1, state3) = transExp' e1 t1 state2 
-                        (code2, state4) = transExp' e2 t2 state3
-                        code = code1 ++ code2 ++ [COND Neq t1 t2 l1 l2]
-                    in (code, popTemp' 2 state4)
-    Greatereq e1 e2 -> let (t1, state1) = newTemp' s
-                           (t2, state2) = newTemp' state1
-                           (code1, state3) = transExp' e1 t1 state2 
-                           (code2, state4) = transExp' e2 t2 state3
-                           code = code1 ++ code2 ++ [COND Gteq t1 t2 l1 l2]
-                       in (code, popTemp' 2 state4)
-    Lesseq e1 e2 -> let (t1, state1) = newTemp' s
-                        (t2, state2) = newTemp' state1
-                        (code1, state3) = transExp' e1 t1 state2 
-                        (code2, state4) = transExp' e2 t2 state3
-                        code = code1 ++ code2 ++ [COND Lteq t1 t2 l1 l2]
-                    in (code, popTemp' 2 state4)
-    Greater e1 e2 -> let (t1, state1) = newTemp' s
-                         (t2, state2) = newTemp' state1
-                         (code1, state3) = transExp' e1 t1 state2 
-                         (code2, state4) = transExp' e2 t2 state3
-                         code = code1 ++ code2 ++ [COND Gt t1 t2 l1 l2]
-                     in (code, popTemp' 2 state4)
-    Less e1 e2 -> let (t1, state1) = newTemp' s
-                      (t2, state2) = newTemp' state1
-                      (code1, state3) = transExp' e1 t1 state2 
-                      (code2, state4) = transExp' e2 t2 state3
-                      code = code1 ++ code2 ++ [COND Lt t1 t2 l1 l2]
-                  in (code, popTemp' 2 state4)
-    And e1 e2 -> let (t1, state1) = newTemp' s
-                     (t2, state2) = newTemp' state1
-                     (code1, state3) = transExp' e1 t1 state2 
-                     (code2, state4) = transExp' e2 t2 state3
-                     code = code1 ++ code2 ++ [COND AndC t1 t2 l1 l2]
-                 in (code, popTemp' 2 state4)
-    Or e1 e2 -> let (t1, state1) = newTemp' s
-                    (t2, state2) = newTemp' state1
-                    (code1, state3) = transExp' e1 t1 state2 
-                    (code2, state4) = transExp' e2 t2 state3
-                    code = code1 ++ code2 ++ [COND OrC t1 t2 l1 l2]
-                in (code, popTemp' 2 state4)
-    Bool e -> let (t1, state1) = newTemp' s
-                  (code1, state2) = transExp' (Bool e) t1 state1
-                  code = code1 ++ [COND AndC t1 t1 l1 l2]
-              in (code, popTemp' 1 state2)
-    Identifier e -> let (t1, state1) = newTemp' s
-                        (code1, state2) = transExp' (Identifier e) t1 state1
-                        code = code1 ++ [COND AndC t1 t1 l1 l2]
-                    in (code, popTemp' 1 state2)
-    Not e -> let (t1, state1) = newTemp' s
-                 (code1, state2) = transExp' e t1 state1
-                 code = code1 ++ [COND AndC t1 t1 l2 l1]
-             in (code, popTemp' 1 state2)
- 
+    in (code, popTemp 1 s2)
+transExp (Identifier id) dest s = let map = table s
+                                      pos = getPos id s
+                                  in ([LOAD dest pos], s)
+transExp e dest s = case e of
+  (Int n) -> ([MOVEI dest n], s)
+  (Bool n) -> if show n == "True" then ([MOVEI dest 1], s) else ([MOVEI dest 0], s)
+  Readln -> ([READLN dest], s)
+  (Plus e1 e2) -> transBinExpAux Sum e1 e2 dest s
+  (Minus e1 e2) -> transBinExpAux Sub e1 e2 dest s
+  (Times e1 e2) -> transBinExpAux Mult e1 e2 dest s
+  (Div e1 e2) -> transBinExpAux Divide e1 e2 dest s
+  (Mod e1 e2) -> transBinExpAux Modulus e1 e2 dest s
+  (SubExp e) -> transExp e dest s
 
--- NOTE: Var Id Exp and Assign Id Exp might require a new new function, since they must return a new table (I believe)
-transStm' :: Stm -> State -> ([Instr], State)
-tranStm' EmptyStm s = ([], s)
-transStm' stm s = case stm of
-  (If e stm) -> let (l1, state1) = newLabel' s
-                    (l2, state2) = newLabel' state1
-                    (code1, state3) = transCond' e l1 l2 state2
-                    (code2 , state4) = transStm' stm state3
+transBinCondAux :: BinOP -> Exp -> Exp -> Label -> Label -> State -> ([Instr], State)
+transBinCondAux op e1 e2 l1 l2 s
+  = let (t1, s1) = newTemp s
+        (t2, s2) = newTemp s1
+        (code1, s3) = transExp e1 t1 s2
+        (code2, s4) = transExp e2 t2 s3
+        code = code1 ++ code2 ++ [COND op t1 t2 l1 l2]
+     in (code, popTemp 2 s4)
+
+transCondAux :: Exp -> Label -> Label -> State -> ([Instr], State)
+transCondAux e l1 l2 s = let (t1, s1) = newTemp s
+                             (code1, s2) = transExp e t1 s1
+                             code = code1 ++ [COND AndC t1 t1 l1 l2]
+                         in (code, popTemp 1 s2)
+
+transCond:: Exp -> Label -> Label -> State -> ([Instr], State)
+transCond e l1 l2 s = case e of
+    Equal e1 e2 -> transBinCondAux Eq e1 e2 l1 l2 s
+    Nequal e1 e2 -> transBinCondAux Neq e1 e2 l1 l2 s
+    Greatereq e1 e2 -> transBinCondAux Gteq e1 e2 l1 l2 s
+    Lesseq e1 e2 -> transBinCondAux Lteq e1 e2 l1 l2 s
+    Greater e1 e2 -> transBinCondAux Gt e1 e2 l1 l2 s
+    Less e1 e2 -> transBinCondAux Lt e1 e2 l1 l2 s
+    And e1 e2 -> transBinCondAux AndC e1 e2 l1 l2 s
+    Or e1 e2 -> transBinCondAux OrC e1 e2 l1 l2 s
+    Bool e1 -> transCondAux e l1 l2 s
+    Identifier e1 -> transCondAux e l1 l2 s
+    Not e1 -> transCondAux e l2 l1 s
+
+transStm :: Stm -> State -> ([Instr], State)
+transStm EmptyStm s = ([], s)
+transStm stm s = case stm of
+  (If e stm) -> let (l1, s1) = newLabel s
+                    (l2, s2) = newLabel s1
+                    (code1, s3) = transCond e l1 l2 s2
+                    (code2 , s4) = transStm stm s3
                     code = code1 ++ [LABEL l1] ++ code2 ++ [LABEL l2]
-                in (code, state4)
-  (IfElse e stm1 stm2) -> let (l1, state1) = newLabel' s
-                              (l2, state2) = newLabel' state1
-                              (l3, state3) = newLabel' state2
-                              (code1, state4) = transCond' e l1 l2 state3
-                              (code2, state5) = transStm' stm1 state4
-                              (code3, state6) = transStm' stm2 state5
+                in (code, s4)
+  (IfElse e stm1 stm2) -> let (l1, s1) = newLabel s
+                              (l2, s2) = newLabel s1
+                              (l3, s3) = newLabel s2
+                              (code1, s4) = transCond e l1 l2 s3
+                              (code2, s5) = transStm stm1 s4
+                              (code3, s6) = transStm stm2 s5
                               code = code1 ++ [LABEL l1] ++ code2 ++ [JUMP l3] ++ [LABEL l2] ++ code3 ++ [LABEL l3]
-                          in (code, state6)
-  (While e stm) -> let (l1, state1) = newLabel' s
-                       (l2, state2) = newLabel' state1
-                       (l3, state3) = newLabel' state2
-                       (code1, state4) = transCond' e l2 l3 state3
-                       (code2, state5) = transStm' stm state4
+                          in (code, s6)
+  (While e stm) -> let (l1, s1) = newLabel s
+                       (l2, s2) = newLabel s1
+                       (l3, s3) = newLabel s2
+                       (code1, s4) = transCond e l2 l3 s3
+                       (code2, s5) = transStm stm s4
                        code = [LABEL l1] ++ code1 ++ [LABEL l2] ++ code2 ++ [JUMP l1] ++ [LABEL l3]
-                   in (code, state5)
-  (Print e)  -> let (t1, state1) = newTemp' s
-                    (code1, state2) = transExp' e t1 state1
-                    code = code1 ++ [PRINT' t1]
-                in (code, popTemp' 1 state2)
+                   in (code, s5)
+  (Print e) -> let (t1, s1) = newTemp s
+                   (code1, s2) = transExp e t1 s1
+                   code = code1 ++ [PRINT' t1]
+               in (code, popTemp 1 s2)
   Return -> ([RETURN'], s)
-  (Block prog) -> let (code1, scopeState) = transProg s prog
-                  in  (code1, s{labelCount = labelCount scopeState}) -- Only State that gets preserved from Scope is Labels  
-  (Var id t e) -> let (t1, state1) = newTemp' s
-                      (code1, state2) = transExp' e t1 state1
-                      (pos, state3) = newVariable id state2
+  (Block prog) -> let (code1, scopeS) = transProg prog s
+                  in (code1, s{labelCount = labelCount scopeS}) -- Discard everything but the label count
+  (Var id t e) -> let (t1, s1) = newTemp s
+                      (code1, s2) = transExp e t1 s1
+                      (pos, s3) = newVariable id s2
                       code = code1 ++ [STORE t1 pos]
-                  in (code, popTemp' 1 state3)
-  (Assign id e) ->  let (t1, state1) = newTemp' s
-                        (code1, state2) = transExp' e t1 state1
-                        pos = getPos id state2
-                    in (code1 ++ [STORE t1 pos], popTemp' 1 state2)        
-                    
-{-
-> Parser
-Modificar Parser para apenas aceitar declarações com tipo DONE
-
-> Semantica
-Verificar tipo de variaveis
-Construção de tabela de Simbolos
-
-> Generate intermediary code:
-Prog [2/2] (sequence of stms, and empty)
-BlkORStm [2/2] (stm or block) Unecessary, I believe (simply place the label after the statements in the generated assembly)
-Statements [5/7] (var, id)
-Expressions [18/19] (id)
-Release temporary/registers (function)
-
-> Generate assembly
-allocate variable in .data (follow pdf in moodle)
--}
+                  in (code, popTemp 1 s3)
+  (Assign id e) -> let (t1, s1) = newTemp s
+                       (code1, s2) = transExp e t1 s1
+                       pos = getPos id s2
+                   in (code1 ++ [STORE t1 pos], popTemp 1 s2)

@@ -1,6 +1,6 @@
 module TestCodeGen where
 import AstGenerator (makeStmAst, makeAst)
-import CodeGenerator ( Supply, Instr, transStm', initialState, State, transStart, transProg, transCond')
+import CodeGenerator ( Supply, Instr, transStm, initialState, State, transStart, transProg, transCond)
 import Lexer (Token, alexScanTokens)
 import Parser (AbstractSyntaxTree, Prog, parseStms, parse)
 import MipsGenerator (transInstr)
