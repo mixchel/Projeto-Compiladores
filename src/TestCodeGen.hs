@@ -37,5 +37,5 @@ printResult r = let
     correct' = putStr "Are Types Correct: ": [print $ correct r]
     st = putStrLn "\n------Final State: " : [print $ state r]
     c = putStrLn "\n------intermediary Code:":printCode (code r)
-    asm = putStrLn "Assembly code:": map putStrLn (assembly r)
+    asm = map putStrLn ("Assembly code:":".data":"vars: .space 400":"":".text":assembly r)
     in og ++ to ++ tree ++ typeList ++ correct' ++ st ++ c ++ asm
